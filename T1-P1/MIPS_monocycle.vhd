@@ -30,12 +30,12 @@ end MIPS_monocycle;
 
 architecture behavioral of MIPS_monocycle is
 
-    signal pc, readData2, writeData, instructionFetchAddress: UNSIGNED(31 downto 0);
-    signal signExtended, zeroExtended : UNSIGNED(31 downto 0);
-    signal ALUoperand1, ALUoperand2, result: UNSIGNED(31 downto 0);
-    signal branchOffset, branchTarget, jumpTarget: UNSIGNED(31 downto 0);
-    signal writeRegister   : UNSIGNED(4 downto 0);
-    signal regWrite : std_logic;
+    signal pc, readData2, writeData, instructionFetchAddress,
+           signExtended, zeroExtended,
+           ALUoperand1, ALUoperand2, result,
+           branchOffset, branchTarget, jumpTarget               : UNSIGNED(31 downto 0);
+    signal writeRegister                                        : UNSIGNED(4 downto 0);
+    signal regWrite                                             : std_logic;
     
     -- Register file
     type RegisterArray is array (natural range <>) of UNSIGNED(31 downto 0);
