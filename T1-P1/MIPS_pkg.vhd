@@ -12,15 +12,15 @@ package MIPS_pkg is
     -- Implemented instructions
     type Instruction_type is (
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
-        ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR
+        ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI
     );
     
     -- Functions used to facilitate the processor description
     function Decode(instruction: std_logic_vector(31 downto 0)) return Instruction_type;
     function R_Type(instruction: std_logic_vector(31 downto 0)) return boolean;
-    function WriteRegisterFile(instruction: Instruction_type) return boolean;
-    function LoadInstruction(instruction: Instruction_type) return boolean;
-    function StoreInstruction(instruction: Instruction_type) return boolean;    
+    function WriteRegisterFile(instruction: Instruction_type)   return boolean;
+    function LoadInstruction(instruction: Instruction_type)     return boolean;
+    function StoreInstruction(instruction: Instruction_type)    return boolean;    
   
          
 end MIPS_pkg;
@@ -99,6 +99,9 @@ package body MIPS_pkg is
 
         when "001110" =>
             decodedInstruction := XORI;
+
+        when "001100" =>
+            decodedInstruction := ANDI;
         
         when others=>    
             decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
@@ -117,7 +120,7 @@ package body MIPS_pkg is
         
         case (instruction) is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
-                 NOOR =>
+                 NOOR | ANDI =>
                 result := true;
             
             when others =>
