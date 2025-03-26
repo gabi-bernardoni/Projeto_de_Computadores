@@ -187,8 +187,10 @@ begin
                 ALUoperand1 sll TO_INTEGER(ALUoperand2(4 downto 0)) when decodedInstruction = SHIFT_LL  else
                 ALUoperand1 srl TO_INTEGER(ALUoperand2(4 downto 0)) when decodedInstruction = SHIFT_RL  else
                 (0=>'1', others=>'0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
-                (others=>'0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2)) else
+                (others=>'0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))   else
                 ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI else
+                UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand1), TO_INTEGER(ALUoperand2(4 downto 0)))) when
+                                                decodedInstruction = SHIFT_RA    else
                 ALUoperand1 + ALUoperand2;    -- default for ADDU, ADDIU, SW, LW   
 
 
