@@ -184,8 +184,8 @@ begin
                 ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
                 ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
                 ALUoperand1 nor ALUoperand2 when decodedInstruction = NOOR else
-                ALUoperand1 sll TO_INTEGER(UNSIGNED(instruction_shamt))    when decodedInstruction = SHIFT_LL     else
-                ALUoperand1 srl TO_INTEGER(UNSIGNED(instruction_shamt))    when decodedInstruction = SHIFT_RL     else
+                ALUoperand1 sll TO_INTEGER(ALUoperand2(4 downto 0)) when decodedInstruction = SHIFT_LL  else
+                ALUoperand1 srl TO_INTEGER(ALUoperand2(4 downto 0)) when decodedInstruction = SHIFT_RL  else
                 (0=>'1', others=>'0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
                 (others=>'0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))   else
                 ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI else
