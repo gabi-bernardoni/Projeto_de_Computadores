@@ -179,7 +179,7 @@ begin
     ---------------------
     result <=   ALUoperand1 - ALUoperand2   when decodedInstruction = SUBU or
                                                  decodedInstruction = BEQ  or
-                                                 decodedInsutrction = BNE  else
+                                                 decodedInstruction = BNE  else
                 ALUoperand1 and ALUoperand2 when decodedInstruction = AAND or decodedInstruction = ANDI else 
                 ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
                 ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
