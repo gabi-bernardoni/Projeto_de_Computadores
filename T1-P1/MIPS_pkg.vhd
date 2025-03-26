@@ -12,7 +12,7 @@ package MIPS_pkg is
     -- Implemented instructions
     type Instruction_type is (
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
-        ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI
+        ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR
     );
     
     -- Functions used to facilitate the processor description
@@ -66,6 +66,9 @@ package body MIPS_pkg is
 
                 elsif instruction(5 downto 0) = "100110" then
                     decodedInstruction := XOOR;
+
+                elsif instruction(5 downto 0) = "100111" then
+                    decodedInstruction := NOOR;
                 end if;
         
         when "101011" =>
@@ -113,7 +116,8 @@ package body MIPS_pkg is
     begin
         
         case (instruction) is
-            when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI =>
+            when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
+                 NOOR =>
                 result := true;
             
             when others =>
