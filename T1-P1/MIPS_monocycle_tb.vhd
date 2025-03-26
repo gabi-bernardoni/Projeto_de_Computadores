@@ -58,7 +58,7 @@ begin
             COL_WIDTH       => 8,
             NB_COL          => 4,   
             OFFSET          => MARS_INSTRUCTION_OFFSET,   -- MARS initial address (mapped to memory address 0x00000000)
-            imageFileName   => "BubbleSort_code.txt"
+            imageFileName   => "t1_code.txt"
         )
         port map (
             clk             => clk,
@@ -78,7 +78,7 @@ begin
             COL_WIDTH       => 8,
             NB_COL          => 4,           
             OFFSET          => MARS_DATA_OFFSET,  -- MARS initial address (mapped to memory address 0x00000000)
-            imageFileName   => "BubbleSort_data.txt"
+            imageFileName   => "t1_data.txt"
         )
         port map (
             clk             => clk_n,
