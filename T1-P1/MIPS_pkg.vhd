@@ -63,6 +63,9 @@ package body MIPS_pkg is
                 
                 elsif instruction(5 downto 0) = "001000" then
                     decodedInstruction := JR;
+
+                elsif instruction(5 downto 0) = "100110" then
+                    decodedInstruction := XOOR;
                 end if;
         
         when "101011" =>
@@ -90,6 +93,9 @@ package body MIPS_pkg is
             if instruction(25 downto 21) = "00000" then
                 decodedInstruction := LUI;
             end if;
+
+        when "001110" =>
+            decodedInstruction := XORI;
         
         when others=>    
             decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
