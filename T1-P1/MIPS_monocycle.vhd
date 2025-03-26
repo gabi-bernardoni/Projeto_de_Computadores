@@ -166,15 +166,17 @@ begin
     -- In ORI instruction the second ALU operand is zeroExtended
     -- MUX at the ALU second input
     MUX_ALU: ALUoperand2 <= readData2 when R_Type(instruction) or decodedInstruction = BEQ else 
-                            zeroExtended when decodedInstruction = ORI else
+                            zeroExtended when decodedInstruction = ORI or
+                                              decodedInstruction = XORI or
+                                              decodedInstruction = ANDI else
                             signExtended;
     
     ---------------------
     -- Behavioural ALU --
     ---------------------
-    result <=   ALUoperand1 - ALUoperand2 when decodedInstruction = SUBU or decodedInstruction = BEQ else
-                ALUoperand1 and ALUoperand2 when decodedInstruction = AAND else 
-                ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR or decodedInstruction = ORI else 
+    result <=   ALUoperand1 - ALUoperand2   when decodedInstruction = SUBU or decodedInstruction = BEQ  else
+                ALUoperand1 and ALUoperand2 when decodedInstruction = AAND or decodedInstruction = ANDI else 
+                ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
                 ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
                 ALUoperand1 nor ALUoperand2 when decodedInstruction = NOOR else
                 (0=>'1', others=>'0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
