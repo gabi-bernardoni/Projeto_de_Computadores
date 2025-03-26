@@ -116,9 +116,10 @@ begin
     -- MUX which selects the source address of the next instruction 
     -- Not present in datapath diagram
     -- In case of jump/branch, PC must be bypassed due to synchronous memory read
-    instructionFetchAddress <= branchTarget when decodedInstruction = BEQ and zero = '1' else 
-                               jumpTarget when decodedInstruction = J or decodedInstruction = JAL else
-                               ALUoperand1 when decodedInstruction = JR else
+    instructionFetchAddress <= branchTarget when (decodedInstruction = BEQ and zero = '1') or
+                                                 (decodedInstruction = BNE and zero = '0') else 
+                               jumpTarget   when decodedInstruction = J or decodedInstruction = JAL else
+                               ALUoperand1  when decodedInstruction = JR else
                                pc;
                     
     -- Instruction memory addressing
@@ -165,8 +166,10 @@ begin
     -- In R-type or BEQ instructions, the second ALU operand comes from the register file
     -- In ORI instruction the second ALU operand is zeroExtended
     -- MUX at the ALU second input
-    MUX_ALU: ALUoperand2 <= readData2 when R_Type(instruction) or decodedInstruction = BEQ else 
-                            zeroExtended when decodedInstruction = ORI or
+    MUX_ALU: ALUoperand2 <= readData2    when R_Type(instruction)       or
+                                              decodedInstruction = BEQ  or
+                                              decodedInstruction = BNE  else
+                            zeroExtended when decodedInstruction = ORI  or
                                               decodedInstruction = XORI or
                                               decodedInstruction = ANDI else
                             signExtended;
@@ -174,7 +177,9 @@ begin
     ---------------------
     -- Behavioural ALU --
     ---------------------
-    result <=   ALUoperand1 - ALUoperand2   when decodedInstruction = SUBU or decodedInstruction = BEQ  else
+    result <=   ALUoperand1 - ALUoperand2   when decodedInstruction = SUBU or
+                                                 decodedInstruction = BEQ  or
+                                                 decodedInsutrction = BNE  else
                 ALUoperand1 and ALUoperand2 when decodedInstruction = AAND or decodedInstruction = ANDI else 
                 ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
                 ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
