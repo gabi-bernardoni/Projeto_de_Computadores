@@ -159,8 +159,13 @@ begin
     end process;
     
        
-    -- The first ALU operand always comes from the register file
-    ALUoperand1 <= registerFile(TO_INTEGER(UNSIGNED(instruction_rs)));
+    -- Pega o primeiro operador a ser usado na ULA, que normalmente vem do banco de registradores
+    -- No caso de operações de shift, o campo rs da instrução tipo-R é nulo, então ao invés disso
+    -- pegamos o campo shamt
+    ALUoperand1 <= RESIZE(UNSIGNED(instruction_shamt), ALUoperand1'length) when (decodedInstruction = SHIFT_LL  or 
+                                                                                 decodedInstruction = SHIFT_RL  or 
+                                                                                 decodedInstruction = SHIFT_RA) else
+                   registerFile(TO_INTEGER(UNSIGNED(instruction_rs)));
     
     -- Selects the second ALU operand
     -- In R-type or BEQ instructions, the second ALU operand comes from the register file
