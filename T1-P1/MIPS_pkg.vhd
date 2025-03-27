@@ -13,7 +13,7 @@ package MIPS_pkg is
     type Instruction_type is (
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
         ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI, BNE, SHIFT_LL,
-        SHIFT_RL, SHIFT_RA
+        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV
     );
     
     -- Functions used to facilitate the processor description
@@ -79,6 +79,15 @@ package body MIPS_pkg is
 
                 elsif instruction(5 downto 0) = "000011" then
                     decodedInstruction := SHIFT_RA;
+
+                elsif instruction(5 downto 0) = "000100" then
+                    decodedInstruction := SLLV;
+
+                elsif instruction(5 downto 0) = "000110" then
+                    decodedInstruction := SRLV;
+
+                elsif instruction(5 downto 0) = "000111" then
+                    decodedInstruction := SRAV;
                 end if;
         
         when "101011" =>
@@ -133,7 +142,7 @@ package body MIPS_pkg is
         
         case (instruction) is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
-                 NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA =>
+                 NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV =>
                 result := true;
             
             when others =>
