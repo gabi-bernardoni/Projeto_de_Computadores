@@ -184,13 +184,17 @@ begin
                 ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
                 ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
                 ALUoperand1 nor ALUoperand2 when decodedInstruction = NOOR else
-                ALUoperand2 sll TO_INTEGER(ALUoperand1) when decodedInstruction = SHIFT_LL else
-                ALUoperand2 srl TO_INTEGER(ALUoperand1) when decodedInstruction = SHIFT_RL else
+                ALUoperand2 sll TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_LL  else
+                ALUoperand2 srl TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_RL  else
+                ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV      else
+                ALUoperand2 srl TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SRLV      else
                 (0=>'1', others=>'0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
                 (others=>'0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))   else
-                ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI else
-                UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1))) when
-                                                decodedInstruction = SHIFT_RA    else
+                ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI      else
+                UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1)))
+                                                   when decodedInstruction = SHIFT_RA else
+                UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
+                                                   when decodedInstruction = SRAV     else
                 ALUoperand1 + ALUoperand2;    -- default for ADDU, ADDIU, SW, LW   
 
 
