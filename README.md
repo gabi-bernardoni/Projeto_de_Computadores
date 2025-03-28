@@ -1,3 +1,3 @@
-# Projeto de Computadores
+# Projeto de Sistemas Computacionais
 
-Repositório destinado ao Trabalho  da disciplina de Projeto de Computadores
+Repositório destinado aos Trabalhos realizados durante a disciplina de Projeto de Sistemas Computacionais
