@@ -48,7 +48,7 @@ package body MIPS_pkg is
         case(instruction(31 downto 26)) is
             when "000000" => -- R-Type        
                 if instruction(5 downto 0) = "100001" then
-                    decodedInstruction := ADDIU;
+                    decodedInstruction := ADDU;
                 
                 elsif instruction(5 downto 0) = "100011" then
                     decodedInstruction := SUBU;
