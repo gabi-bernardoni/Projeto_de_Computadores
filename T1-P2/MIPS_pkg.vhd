@@ -13,8 +13,7 @@ package MIPS_pkg is
     type Instruction_type is (
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
         ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI, BNE, SHIFT_LL,
-        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU, LH, LHU, SB, SH,
-        SLTI, SLTIU, BGEZ, BLEZ, JALR
+        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV
     );
     
     -- Functions used to facilitate the processor description
@@ -89,79 +88,45 @@ package body MIPS_pkg is
 
                 elsif instruction(5 downto 0) = "000111" then
                     decodedInstruction := SRAV;
-                    
-                elsif instruction(5 downto 0) = "001001" then
-                    decodedInstruction := JALR;
                 end if;
         
-            when "100000" => -- LB
-                decodedInstruction := LB;
-                
-            when "100100" => -- LBU
-                decodedInstruction := LBU;
-                
-            when "100001" => -- LH
-                decodedInstruction := LH;
-                
-            when "100101" => -- LHU
-                decodedInstruction := LHU;
-                
-            when "101011" => -- SW
-                decodedInstruction := SW;
-            
-            when "100011" => -- LW
-                decodedInstruction := LW;
-            
-            when "001001" => -- ADDIU
-                decodedInstruction := ADDIU;
-            
-            when "001101" => -- ORI
-                decodedInstruction := ORI;
-            
-            when "000100"  => -- BEQ
-                decodedInstruction := BEQ;
-            
-            when "000010" => -- J
-                decodedInstruction := J;
-            
-            when "000011" => -- JAL
-                decodedInstruction := JAL;
-            
-            when "001111" => -- LUI
-                if instruction(25 downto 21) = "00000" then
-                    decodedInstruction := LUI;
-                end if;
+        when "101011" =>
+            decodedInstruction := SW;
+        
+        when "100011" =>
+            decodedInstruction := LW;
+        
+        when "001001" =>
+            decodedInstruction := ADDIU;
+        
+        when "001101" =>
+            decodedInstruction := ORI;
+        
+        when "000100"  =>
+            decodedInstruction := BEQ;
+        
+        when "000010" =>
+            decodedInstruction := J;
+        
+        when "000011" =>
+            decodedInstruction := JAL;
+        
+        when "001111" => 
+            if instruction(25 downto 21) = "00000" then
+                decodedInstruction := LUI;
+            end if;
 
-            when "001110" => -- XORI
-                decodedInstruction := XORI;
+        when "001110" =>
+            decodedInstruction := XORI;
 
-            when "001100" => -- ANDI
-                decodedInstruction := ANDI;
+        when "001100" =>
+            decodedInstruction := ANDI;
 
-            when "000101" => -- BNE
-                decodedInstruction := BNE;
-                
-            when "101000" => -- SB
-                decodedInstruction := SB;
-                
-            when "101001" => -- SH
-                decodedInstruction := SH;
-                
-            when "001010" => -- SLTI
-                decodedInstruction := SLTI;
-                
-            when "001011" => -- SLTIU
-                decodedInstruction := SLTIU;
-                
-            when "000001" => -- BGEZ/BLEZ
-                if instruction(20 downto 16) = "00001" then -- BGEZ
-                    decodedInstruction := BGEZ;
-                elsif instruction(20 downto 16) = "00000" then -- BLEZ
-                    decodedInstruction := BLEZ;
-                end if;
-            
-            when others=>    
-                decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
+        when "000101" =>
+            decodedInstruction := BNE;
+        
+        when others=>    
+            decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
         end case;
         
         return decodedInstruction;
@@ -177,8 +142,7 @@ package body MIPS_pkg is
         
         case (instruction) is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
-                 NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU | 
-                 LH | LHU | SLTI | SLTIU | JALR =>
+                 NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV =>
                 result := true;
             
             when others =>
@@ -197,7 +161,7 @@ package body MIPS_pkg is
     begin
         
         case (instruction) is
-            when LW | LB | LBU | LH | LHU =>
+            when LW => -- LB, LBU, LH, LHU
                 result := true;
             
             when others =>
@@ -216,7 +180,7 @@ package body MIPS_pkg is
     begin
         
         case (instruction) is
-            when SW | SB | SH =>
+            when SW => -- SB, SH
                 result := true;
             
             when others =>
