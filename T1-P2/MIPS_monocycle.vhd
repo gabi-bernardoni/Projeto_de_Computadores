@@ -134,7 +134,8 @@ begin
     -- Selects the data to be written in the register file
     -- In load instructions the data comes from the data memory
     -- MUX at the data memory output
-    MUX_DATA_MEM: writeData <= UNSIGNED(data_in) when LoadInstruction(decodedInstruction) else 
+    MUX_DATA_MEM: writeData <= UNSIGNED(data_in) when LoadInstruction(decodedInstruction) else
+                               RESIZE(SIGNED(data_in(7 downto 0)), 32) when decodedInstruction = LB else
                                pc when decodedInstruction = JAL else
                                result;
     
@@ -200,7 +201,7 @@ begin
                                                    when decodedInstruction = SHIFT_RA else
                 UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
                                                    when decodedInstruction = SRAV     else
-                ALUoperand1 + ALUoperand2;    -- default for ADDU, ADDIU, SW, LW   
+                ALUoperand1 + ALUoperand2;    -- default - usado em ADDU, ADDIU, SW, LW, LB
 
 
     -- Generates the zero flag
