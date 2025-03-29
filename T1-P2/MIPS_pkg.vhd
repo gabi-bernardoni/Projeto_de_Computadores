@@ -125,7 +125,7 @@ package body MIPS_pkg is
         when "000101" =>
             decodedInstruction := BNE;
 
-       when "100000" =>
+        when "100000" =>
             decodedInstruction := LB;
         
         when others=>    
