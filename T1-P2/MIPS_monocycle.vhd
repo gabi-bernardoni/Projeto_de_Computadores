@@ -207,7 +207,7 @@ begin
                                            when decodedInstruction = SHIFT_RA else
         UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
                                            when decodedInstruction = SRAV     else
-        ALUoperand1 + ALUoperand2;    -- default - usado em ADDU, ADDIU, SW, LW, LB, LBU
+        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
     -- Generates the zero flag
