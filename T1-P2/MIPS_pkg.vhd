@@ -13,7 +13,7 @@ package MIPS_pkg is
     type Instruction_type is (
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
         ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI, BNE, SHIFT_LL,
-        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU
+        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU, SB, SH
     );
     
     -- Functions used to facilitate the processor description
@@ -130,6 +130,12 @@ package body MIPS_pkg is
 
         when "100100" =>
             decodedInstruction := LBU;
+
+        when "101000" =>  -- Added SB
+             decodedInstruction := SB;
+                
+        when "101001" =>  -- Added SH
+             decodedInstruction := SH;
         
         when others=>    
             decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
@@ -186,7 +192,7 @@ package body MIPS_pkg is
     begin
         
         case (instruction) is
-            when SW => -- SB, SH
+            when SW | SB | SH => -- SB, SH
                 result := true;
             
             when others =>
