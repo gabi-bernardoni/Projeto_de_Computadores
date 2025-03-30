@@ -31,7 +31,7 @@ end MIPS_monocycle;
 architecture behavioral of MIPS_monocycle is
 
     signal pc, readData2, writeData, instructionFetchAddress,
-           signExtended, zeroExtended,
+           signExtended, zeroExtended, memSelecionada,
            ALUoperand1, ALUoperand2, result,
            branchOffset, branchTarget, jumpTarget               : UNSIGNED(31 downto 0);
     signal writeRegister                                        : UNSIGNED(4 downto 0);
@@ -219,23 +219,31 @@ begin
     ---------------------------
 
     process(data_in, result)
+        variable byteSelecionado        : std_logic_vector(7 downto 0);
+        variable meiaPalavraSelecionada : std_logic_vector(15 downto 0);
     begin
         if decodedInstruction = LB or decodedInstruction = LBU then
             case result(1 downto 0) is
-                when "00" => byteSelected <= data_in(7 downto 0);
-                when "01" => byteSelected <= data_in(15 downto 8);
-                when "10" => byteSelected <= data_in(23 downto 16);
-                when "11" => byteSelected <= data_in(31 downto 24);
-                when others => byteSelected <= (others => '0');
+                when "00" => byteSelecionado <= data_in(7 downto 0);
+                when "01" => byteSelecionado <= data_in(15 downto 8);
+                when "10" => byteSelecionado <= data_in(23 downto 16);
+                when "11" => byteSelecionado <= data_in(31 downto 24);
+                when others => byteSelecionado <= (others => '0');
             end case;
         else if decodedInstruction = LH or decodedInstruction = LHU then
             case result(1 downto 0) is
-                when "00" => byteSelected <= data_in(15 downto 0);
-                when "10" => byteSelected <= data_in(31 downto 16);
-                when others => byteSelected <= (others => '0');
+                when "00" => meiaPalavraSelecionada <= data_in(15 downto 0);
+                when "10" => meiaPalavraSelecionada <= data_in(31 downto 16);
+                when others => meiaPalavraSelecionada <= (others => '0');
             end case;
         end if;
     end process;
+
+    memSelecionada <=
+        RESIZE(SIGNED(byteSelecionado, memSelecionada'length)) when decodedInstruction = LB else
+        RESIZE(UNSIGNED(byteSelecionado, memSelecionada'length)) when decodedInstruction = LBU else
+        RESIZE(SIGNED(meiaPalavraSelecionada, memSelecionada'length)) when decodedInstruction = LH else
+        RESIZE(UNSIGNED(meiaPalavraSelecionada, memSelecionada'length)) when decodedInstruction = LHU;
     
     -- ALU output address the data memory
     dataAddress <= STD_LOGIC_VECTOR(result);
