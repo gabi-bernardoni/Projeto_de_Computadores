@@ -137,8 +137,12 @@ begin
     -- In load instructions the data comes from the data memory
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
-        UNSIGNED(data_in) when LoadInstruction(decodedInstruction) else
-        pc when decodedInstruction = JAL else
+        UNSIGNED(data_in)        when LoadInstruction(decodedInstruction) else
+        pc 				         when decodedInstruction = JAL else
+     	UNSIGNED(memSelecionada) when decodedInstruction = LB  or
+                				      decodedInstruction = LBU or
+                				      decodedInstruction = LH  or
+                				      decodedInstruction = LHU else
         result;
     
     -- R-type, ADDIU, ORI and load instructions, store the result in the register file
