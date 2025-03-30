@@ -138,7 +138,7 @@ begin
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
         UNSIGNED(data_in)        when LoadInstruction(decodedInstruction) else
-        pc 				         when decodedInstruction = JAL else
+        pc			 when decodedInstruction = JAL else
      	UNSIGNED(memSelecionada) when decodedInstruction = LB  or
                 				      decodedInstruction = LBU or
                 				      decodedInstruction = LH  or
