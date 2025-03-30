@@ -31,10 +31,11 @@ end MIPS_monocycle;
 architecture behavioral of MIPS_monocycle is
 
     signal pc, readData2, writeData, instructionFetchAddress,
-           signExtended, zeroExtended, memSelecionada,
+           signExtended, zeroExtended,
            ALUoperand1, ALUoperand2, result,
            branchOffset, branchTarget, jumpTarget               : UNSIGNED(31 downto 0);
     signal writeRegister                                        : UNSIGNED(4 downto 0);
+    signal memSelecionada                                       : std_logic_vector(31 downto 0);
     signal regWrite                                             : std_logic;
     
     -- Register file
@@ -218,6 +219,8 @@ begin
     -- Data memory interface --
     ---------------------------
 
+    -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado
+    -- dois ultimos bits de data_in
     process(data_in, result)
         variable byteSelecionado        : std_logic_vector(7 downto 0);
         variable meiaPalavraSelecionada : std_logic_vector(15 downto 0);
@@ -237,13 +240,17 @@ begin
                 when others => meiaPalavraSelecionada := (others => '0');
             end case;
         end if;
+
+        case decodedInstruction is
+        	when LB	=>  memSelecionada <= std_logic_vector(RESIZE(SIGNED(byteSelecionado), memSelecionada'length));
+        	when LBU => memSelecionada <= std_logic_vector(RESIZE(UNSIGNED(byteSelecionado), memSelecionada'length));
+        	when LH =>  memSelecionada <= std_logic_vector(RESIZE(SIGNED(meiaPalavraSelecionada), memSelecionada'length));
+        	when LHU => memSelecionada <= std_logic_vector(RESIZE(UNSIGNED(meiaPalavraSelecionada), memSelecionada'length));
+        	when others => memSelecionada <= (others => '0');
+	    end case;
     end process;
 
-    memSelecionada <=
-        RESIZE(SIGNED(byteSelecionado, memSelecionada'length)) when decodedInstruction = LB else
-        RESIZE(UNSIGNED(byteSelecionado, memSelecionada'length)) when decodedInstruction = LBU else
-        RESIZE(SIGNED(meiaPalavraSelecionada, memSelecionada'length)) when decodedInstruction = LH else
-        RESIZE(UNSIGNED(meiaPalavraSelecionada, memSelecionada'length)) when decodedInstruction = LHU;
+    
     
     -- ALU output address the data memory
     dataAddress <= STD_LOGIC_VECTOR(result);
