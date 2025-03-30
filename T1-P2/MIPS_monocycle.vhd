@@ -137,8 +137,6 @@ begin
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
         UNSIGNED(data_in) when LoadInstruction(decodedInstruction) else
-        RESIZE(SIGNED(data_in(7 downto 0)), 32) when decodedInstruction = LB else
-        RESIZE(UNSIGNED(data_in(7 downto 0)), 32) when decodedInstruction = LBU else
         pc when decodedInstruction = JAL else
         result;
     
@@ -219,6 +217,25 @@ begin
     ---------------------------
     -- Data memory interface --
     ---------------------------
+
+    process(data_in, result)
+    begin
+        if decodedInstruction = LB or decodedInstruction = LBU then
+            case result(1 downto 0) is
+                when "00" => byteSelected <= data_in(7 downto 0);
+                when "01" => byteSelected <= data_in(15 downto 8);
+                when "10" => byteSelected <= data_in(23 downto 16);
+                when "11" => byteSelected <= data_in(31 downto 24);
+                when others => byteSelected <= (others => '0');
+            end case;
+        else if decodedInstruction = LH or decodedInstruction = LHU then
+            case result(1 downto 0) is
+                when "00" => byteSelected <= data_in(15 downto 0);
+                when "10" => byteSelected <= data_in(31 downto 16);
+                when others => byteSelected <= (others => '0');
+            end case;
+        end if;
+    end process;
     
     -- ALU output address the data memory
     dataAddress <= STD_LOGIC_VECTOR(result);
