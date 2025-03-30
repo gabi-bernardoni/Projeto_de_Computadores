@@ -131,7 +131,7 @@ package body MIPS_pkg is
         when "100100" =>
             decodedInstruction := LBU;
 
-       when "001001" =>
+       when "100001" =>
             decodedInstruction := LH;
 
        when "100101" =>
