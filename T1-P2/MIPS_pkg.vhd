@@ -13,7 +13,7 @@ package MIPS_pkg is
     type Instruction_type is (
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
         ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI, BNE, SHIFT_LL,
-        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU
+        SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU, LH, LHU
     );
     
     -- Functions used to facilitate the processor description
@@ -130,6 +130,12 @@ package body MIPS_pkg is
 
         when "100100" =>
             decodedInstruction := LBU;
+
+       when "001001" =>
+            decodedInstruction := LH;
+
+       when "100101" =>
+            decodedInstruction := LHU;
         
         when others=>    
             decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
@@ -148,7 +154,8 @@ package body MIPS_pkg is
         
         case (instruction) is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
-                 NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU =>
+                 NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU |
+                 LH | LHU =>
                 result := true;
             
             when others =>
@@ -167,7 +174,7 @@ package body MIPS_pkg is
     begin
         
         case (instruction) is
-            when LW | LB | LBU => -- LH, LHU
+            when LW | LB | LBU | LH | LHU =>
                 result := true;
             
             when others =>
