@@ -182,7 +182,8 @@ begin
                           decodedInstruction = BNE  else
         zeroExtended when decodedInstruction = ORI  or
                           decodedInstruction = XORI or
-                          decodedInstruction = ANDI else
+                          decodedInstruction = ANDI or
+                          decodedInstruction = SLTIU else
         signExtended;
     
     ---------------------
