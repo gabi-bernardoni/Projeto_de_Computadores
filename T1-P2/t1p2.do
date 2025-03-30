@@ -9,7 +9,7 @@ add wave -noupdate -format Literal /mips_monocycle_tb/mips_monocycle/decodedinst
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/dataaddress
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/data_in
 add wave -noupdate -format Logic /mips_monocycle_tb/data_memory/ce
-add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/registerfile
+add wave -noupdate -format Literal -radix hexadecimal -expand /mips_monocycle_tb/mips_monocycle/registerfile
 add wave -noupdate -divider {Data Memory}
 add wave -noupdate -format Literal -radix hexadecimal -expand /mips_monocycle_tb/data_memory/memoryarray
 add wave -noupdate -divider {Instruction Memory}
