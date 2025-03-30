@@ -14,7 +14,7 @@ package MIPS_pkg is
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
         ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI, BNE, SHIFT_LL,
         SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU, LH, LHU, SB, SH, SLTI,
-        SLTIU
+        SLTIU, BGEZ, BLEZ, JALR
     );
     
     -- Functions used to facilitate the processor description
