@@ -224,17 +224,17 @@ begin
     begin
         if decodedInstruction = LB or decodedInstruction = LBU then
             case result(1 downto 0) is
-                when "00" => byteSelecionado <= data_in(7 downto 0);
-                when "01" => byteSelecionado <= data_in(15 downto 8);
-                when "10" => byteSelecionado <= data_in(23 downto 16);
-                when "11" => byteSelecionado <= data_in(31 downto 24);
-                when others => byteSelecionado <= (others => '0');
+                when "00" => byteSelecionado := data_in(7 downto 0);
+                when "01" => byteSelecionado := data_in(15 downto 8);
+                when "10" => byteSelecionado := data_in(23 downto 16);
+                when "11" => byteSelecionado := data_in(31 downto 24);
+                when others => byteSelecionado := (others => '0');
             end case;
         else if decodedInstruction = LH or decodedInstruction = LHU then
             case result(1 downto 0) is
-                when "00" => meiaPalavraSelecionada <= data_in(15 downto 0);
-                when "10" => meiaPalavraSelecionada <= data_in(31 downto 16);
-                when others => meiaPalavraSelecionada <= (others => '0');
+                when "00" => meiaPalavraSelecionada := data_in(15 downto 0);
+                when "10" => meiaPalavraSelecionada := data_in(31 downto 16);
+                when others => meiaPalavraSelecionada := (others => '0');
             end case;
         end if;
     end process;
