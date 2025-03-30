@@ -226,7 +226,10 @@ begin
     -- Data to data memory comes from the second read register at register file
     data_out <= STD_LOGIC_VECTOR(readData2);
     
-    wbe <= "1111" when decodedInstruction = SW else "0000";
+    wbe <= "1111" when decodedInstruction = SW else 
+           "0011" when decodedInstruction = SH else   
+           "0001" when decodedInstruction = SB else   
+           "0000";                                                           
     
     ce <= '1' when LoadInstruction(decodedInstruction) or StoreInstruction(decodedInstruction) else '0';
     
