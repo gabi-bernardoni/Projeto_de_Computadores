@@ -185,7 +185,8 @@ begin
                           decodedInstruction = BNE  else
         zeroExtended when decodedInstruction = ORI  or
                           decodedInstruction = XORI or
-                          decodedInstruction = ANDI else
+                          decodedInstruction = ANDI or
+                          decodedInstruction = SLTIU else
         signExtended;
     
     ---------------------
@@ -203,14 +204,16 @@ begin
         ALUoperand2 srl TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_RL  else
         ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV      else
         ALUoperand2 srl TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SRLV      else
-        (0=>'1', others=>'0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
-        (others=>'0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))   else
-        ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI      else
-        UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1)))
-                                           when decodedInstruction = SHIFT_RA else
-        UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
-                                           when decodedInstruction = SRAV     else
-        ALUoperand1 + ALUoperand2;    -- default - usado em ADDU, ADDIU, SW, LW, LB, LBU
+        (0=>'1', others=>'0') when (decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2)) or
+                                 (decodedInstruction = SLTI and SIGNED(ALUoperand1) < SIGNED(signExtended)) or
+                                                  (decodedInstruction = SLTU and ALUoperand1 < ALUoperand2) or
+                                                (decodedInstruction = SLTIU and ALUoperand1 < zeroExtended) else
+              (others=>'0') when decodedInstruction = SLT or decodedInstruction = SLTI or
+                                decodedInstruction = SLTU or decodedInstruction = SLTIU else
+              ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI else
+              UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1))) when decodedInstruction = SHIFT_RA else
+              UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0)))) when decodedInstruction = SRAV else
+              ALUoperand1 + ALUoperand2;
 
 
     -- Generates the zero flag
@@ -262,7 +265,10 @@ begin
     -- Data to data memory comes from the second read register at register file
     data_out <= STD_LOGIC_VECTOR(readData2);
     
-    wbe <= "1111" when decodedInstruction = SW else "0000";
+    wbe <= "1111" when decodedInstruction = SW else 
+           "0011" when decodedInstruction = SH else   
+           "0001" when decodedInstruction = SB else   
+           "0000";                                                           
     
     ce <= '1' when LoadInstruction(decodedInstruction) or StoreInstruction(decodedInstruction) else '0';
     
