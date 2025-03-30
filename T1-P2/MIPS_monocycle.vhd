@@ -35,6 +35,7 @@ architecture behavioral of MIPS_monocycle is
            ALUoperand1, ALUoperand2, result,
            branchOffset, branchTarget, jumpTarget               : UNSIGNED(31 downto 0);
     signal writeRegister                                        : UNSIGNED(4 downto 0);
+    signal memSelecionada                                       : std_logic_vector(31 downto 0);
     signal regWrite                                             : std_logic;
     
     -- Register file
@@ -136,10 +137,12 @@ begin
     -- In load instructions the data comes from the data memory
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
-        UNSIGNED(data_in) when LoadInstruction(decodedInstruction) else
-        RESIZE(SIGNED(data_in(7 downto 0)), 32) when decodedInstruction = LB else
-        RESIZE(UNSIGNED(data_in(7 downto 0)), 32) when decodedInstruction = LBU else
-        pc when decodedInstruction = JAL else
+        UNSIGNED(data_in)        when LoadInstruction(decodedInstruction) else
+        pc 				         when decodedInstruction = JAL else
+     	UNSIGNED(memSelecionada) when decodedInstruction = LB  or
+                				      decodedInstruction = LBU or
+                				      decodedInstruction = LH  or
+                				      decodedInstruction = LHU else
         result;
     
     -- R-type, ADDIU, ORI and load instructions, store the result in the register file
@@ -222,6 +225,39 @@ begin
     ---------------------------
     -- Data memory interface --
     ---------------------------
+
+    -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado
+    -- dois ultimos bits de data_in
+    process(data_in, result)
+        variable byteSelecionado        : std_logic_vector(7 downto 0);
+        variable meiaPalavraSelecionada : std_logic_vector(15 downto 0);
+    begin
+        if decodedInstruction = LB or decodedInstruction = LBU then
+            case result(1 downto 0) is
+                when "00" => byteSelecionado := data_in(7 downto 0);
+                when "01" => byteSelecionado := data_in(15 downto 8);
+                when "10" => byteSelecionado := data_in(23 downto 16);
+                when "11" => byteSelecionado := data_in(31 downto 24);
+                when others => byteSelecionado := (others => '0');
+            end case;
+        elsif decodedInstruction = LH or decodedInstruction = LHU then
+            case result(1 downto 0) is
+                when "00" => meiaPalavraSelecionada := data_in(15 downto 0);
+                when "10" => meiaPalavraSelecionada := data_in(31 downto 16);
+                when others => meiaPalavraSelecionada := (others => '0');
+            end case;
+        end if;
+
+        case decodedInstruction is
+        	when LB	=>  memSelecionada <= std_logic_vector(RESIZE(SIGNED(byteSelecionado), memSelecionada'length));
+        	when LBU => memSelecionada <= std_logic_vector(RESIZE(UNSIGNED(byteSelecionado), memSelecionada'length));
+        	when LH =>  memSelecionada <= std_logic_vector(RESIZE(SIGNED(meiaPalavraSelecionada), memSelecionada'length));
+        	when LHU => memSelecionada <= std_logic_vector(RESIZE(UNSIGNED(meiaPalavraSelecionada), memSelecionada'length));
+        	when others => memSelecionada <= (others => '0');
+	    end case;
+    end process;
+
+    
     
     -- ALU output address the data memory
     dataAddress <= STD_LOGIC_VECTOR(result);
