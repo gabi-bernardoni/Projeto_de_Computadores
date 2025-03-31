@@ -129,7 +129,7 @@ package body MIPS_pkg is
             when others => decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
         end case;
             
-            return decodedInstruction;
+        return decodedInstruction;
     
     end Decode;
 
