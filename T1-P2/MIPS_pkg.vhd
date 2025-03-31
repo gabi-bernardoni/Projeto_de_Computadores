@@ -110,8 +110,8 @@ package body MIPS_pkg is
         case instruction is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
                  NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU |
-                 LH | LHU | SB | SH | |SLTI | SLTIU | JALR => return true;
-            when others =>                                    return false;
+                 LH | LHU | SB | SH | SLTI | SLTIU | JALR => return true;
+            when others =>                                   return false;
         end case;
     end WriteRegisterFile;
 
