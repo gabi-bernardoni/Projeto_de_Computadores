@@ -56,7 +56,7 @@ architecture behavioral of MIPS_monocycle is
      -- ALU negative flag
     signal negative : std_logic;
 				
-    signal byteSelect <= std_logic_vector(result(1 downto 0));
+    signal byteSelect : std_logic_vector(1 downto 0);
      -- Seleção de byte/halfword
     
     -- Locks the processor until the first clk rising edge
@@ -264,8 +264,8 @@ MUX_ALU: ALUoperand2 <= readData2 when R_Type(instruction) or decodedInstruction
     -- Data to data memory comes from the second read register at register file
     -- Assigns a byte from readData2 to the corrent position in data_o based on byteSelect for SB instruction
     -- For SW, takes the value from readData2 directly
-    data_out <= STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(7 downto 0)), 32) sll TO_INTEGER(byteSelect)*8) when decodedInstruction = SB else
-              STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(15 downto 0)), data_out length) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SH else
+    data_out <= STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(15 downto 0)), 32) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SB else
+              STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(15 downto 0)), data_out 'length) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SH else
               STD_LOGIC_VECTOR(readData2);
               
     
