@@ -118,17 +118,16 @@ package body MIPS_pkg is
             when "101001" => decodedInstruction := SH;
             when "001010" => decodedInstruction := SLTI;
             when "001011" => decodedInstruction := SLTIU;
+            when "000110" =>
+                if instruction(20 downto 16) = "00000" then
+                    decodedInstruction := BLEZ;
+                end if;
             when others => decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
         end case;
         
         case instruction(20 downto 16) is
                     when "00001" => 
             decodedInstruction := BGEZ;
-                   
-                    when "00000" => 
-            decodedInstruction := BLEZ;
-                    when others => null;
-                end case;
         end case;
             
             return decodedInstruction;
