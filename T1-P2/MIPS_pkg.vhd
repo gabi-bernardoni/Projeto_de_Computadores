@@ -210,7 +210,8 @@ package body MIPS_pkg is
     begin
         case instruction is
             when LW|LB|LBU|LH|LHU => return true;
-            when others => return false;
+            when others => 
+                 result := false;
         end case;
     end LoadInstruction;
     
@@ -218,7 +219,8 @@ package body MIPS_pkg is
     begin
         case instruction is
             when SW|SB|SH => return true;
-            when others => return false;
+            when others => 
+                 result := false;
         end case;
     end StoreInstruction;
     
@@ -226,7 +228,8 @@ package body MIPS_pkg is
     begin
         case instruction is
             when BEQ|BNE|BGEZ|BLEZ => return true;
-            when others => return false;
+            when others => 
+                 result := false;
         end case;
     end BranchInstruction;
     
@@ -234,7 +237,8 @@ package body MIPS_pkg is
     begin
         case instruction is
             when J|JAL|JR|JALR => return true;
-            when others => return false;
+            when others => 
+                result := false;
         end case;
     end JumpInstruction;
 end MIPS_pkg;
