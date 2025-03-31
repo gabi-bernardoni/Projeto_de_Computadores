@@ -53,6 +53,11 @@ architecture behavioral of MIPS_monocycle is
        
     -- ALU zero flag
     signal zero : std_logic;
+     -- ALU negative flag
+    signal negative : std_logic;
+				
+    signal byteSelect <= std_logic_vector(result(1 downto 0));
+     -- Seleção de byte/halfword
     
     -- Locks the processor until the first clk rising edge
     signal lock: boolean;
@@ -144,7 +149,7 @@ begin
     -- MUX at the data memory output
   MUX_DATA_MEM: writeData <= UNSIGNED(byteExtended) when decodedInstruction = LB or decodedInstruction = LBU else
                                UNSIGNED(halfExtended) when decodedInstruction = LH or decodedInstruction = LHU else
-                               UNSIGNED(data_i) when LoadInstruction(decodedInstruction) and (decodedInstruction /= LB and decodedInstruction /= LBU and decodedInstruction /= LH and decodedInstruction /= LHU) else
+                               UNSIGNED(data_in) when LoadInstruction(decodedInstruction) and (decodedInstruction /= LB and decodedInstruction /= LBU and decodedInstruction /= LH and decodedInstruction /= LHU) else
                                pc when decodedInstruction = JAL else
                                pc when decodedInstruction = JALR else
         result;
@@ -183,17 +188,15 @@ begin
     -- In R-type or BEQ instructions, the second ALU operand comes from the register file
     -- In ORI instruction the second ALU operand is zeroExtended
     -- MUX at the ALU second input
-MUX_ALU: ALUoperand2 <= readData2 when opcode = "000000" or decodedInstruction = BEQ or decodedInstruction = BNE else
-                            readData2 when decodedInstruction = BLEZ else
-                            readData2 when decodedInstruction = BGTZ else
-                            readData2 when decodedInstruction = MTC0 else
-                            
-                            UNSIGNED(zeroExtended) when decodedInstruction = ORI  else
-                            UNSIGNED(zeroExtended) when decodedInstruction = ANDI else
-                            UNSIGNED(zeroExtended) when decodedInstruction = XORI else
-                            UNSIGNED(signExtend) when decodedInstruction = SLTI or decodedInstruction = SLTIU else
-                            UNSIGNED(signExtend) when decodedInstruction = ADDI else
-                            UNSIGNED(signExtend);
+MUX_ALU: ALUoperand2 <= readData2 when R_Type(instruction) or decodedInstruction = BEQ or decodedInstruction = BNE else
+                        readData2 when decodedInstruction = BLEZ else
+                        readData2 when decodedInstruction = BGTZ else
+                        UNSIGNED(zeroExtended) when decodedInstruction = ORI else
+                        UNSIGNED(zeroExtended) when decodedInstruction = ANDI else
+                        UNSIGNED(zeroExtended) when decodedInstruction = XORI else
+                        signExtended when decodedInstruction = SLTI or decodedInstruction = SLTIU else
+                        signExtended when decodedInstruction = ADDIU else
+                        signExtended;
     
     ---------------------
     -- Behavioural ALU --
@@ -206,13 +209,13 @@ MUX_ALU: ALUoperand2 <= readData2 when opcode = "000000" or decodedInstruction =
                 ALUoperand1 when decodedInstruction = BGTZ else -- pass ALUoperand1 (rs)
                 ALUoperand1 and ALUoperand2 when decodedInstruction = AAND     else 
                 ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR or decodedInstruction = ORI else 
-                ALUoperand1 xor ALUoperand2 when decodedInstruction = XOR_OP else
-                ALUoperand1 nor ALUoperand2 when decodedInstruction = NOR_OP else
+                ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR else
+                ALUoperand1 nor ALUoperand2 when decodedInstruction = NOOR else
                 ALUoperand1 and ALUoperand2 when decodedInstruction = ANDI else
                 ALUoperand1 xor ALUoperand2 when decodedInstruction = XORI else
-                ALUoperand2 sll TO_INTEGER(ALUoperand1) when decodedInstruction = SLL_OP else
-                ALUoperand2 srl TO_INTEGER(ALUoperand1) when decodedInstruction = SRL_OP else
-                UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1))) when decodedInstruction = SRA_OP else
+                ALUoperand2 sll TO_INTEGER(ALUoperand1) when decodedInstruction = SHIFT_LL else
+                ALUoperand2 srl TO_INTEGER(ALUoperand1) when decodedInstruction = SHIFT_RL else
+                UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1))) when decodedInstruction = SHIFT_RA else
                 ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV else
                 ALUoperand2 srl TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SRLV else
                 UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0)))) when decodedInstruction = SRAV else
@@ -234,20 +237,20 @@ MUX_ALU: ALUoperand2 <= readData2 when opcode = "000000" or decodedInstruction =
     negative <= result(31);
 
  -- Adding suport for LB and LBU instructions: --
-    byteExtended <= std_logic_vector(RESIZE(SIGNED(data_i(7  downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LB else
-                    std_logic_vector(RESIZE(SIGNED(data_i(15 downto  8)), 32)) when byteSelect = "01" and decodedInstruction = LB else
-                    std_logic_vector(RESIZE(SIGNED(data_i(23 downto 16)), 32)) when byteSelect = "10" and decodedInstruction = LB else
-                    std_logic_vector(RESIZE(SIGNED(data_i(31 downto 24)), 32)) when byteSelect = "11" and decodedInstruction = LB else
-                    std_logic_vector(RESIZE(UNSIGNED(data_i(7  downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LBU else
-                    std_logic_vector(RESIZE(UNSIGNED(data_i(15 downto  8)), 32)) when byteSelect = "01" and decodedInstruction = LBU else
-                    std_logic_vector(RESIZE(UNSIGNED(data_i(23 downto 16)), 32)) when byteSelect = "10" and decodedInstruction = LBU else
-                    std_logic_vector(RESIZE(UNSIGNED(data_i(31 downto 24)), 32));
+    byteExtended <= std_logic_vector(RESIZE(SIGNED(data_in(7  downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LB else
+                    std_logic_vector(RESIZE(SIGNED(data_in(15 downto  8)), 32)) when byteSelect = "01" and decodedInstruction = LB else
+                    std_logic_vector(RESIZE(SIGNED(data_in(23 downto 16)), 32)) when byteSelect = "10" and decodedInstruction = LB else
+                    std_logic_vector(RESIZE(SIGNED(data_in(31 downto 24)), 32)) when byteSelect = "11" and decodedInstruction = LB else
+                    std_logic_vector(RESIZE(UNSIGNED(data_in(7  downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LBU else
+                    std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto  8)), 32)) when byteSelect = "01" and decodedInstruction = LBU else
+                    std_logic_vector(RESIZE(UNSIGNED(data_in(23 downto 16)), 32)) when byteSelect = "10" and decodedInstruction = LBU else
+                    std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 24)), 32));
 
     -- Adding support for LH and LHU instructions
-    halfExtended <= std_logic_vector(RESIZE(SIGNED(data_i(15 downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LH else
-                    std_logic_vector(RESIZE(SIGNED(data_i(31 downto 16)), 32)) when byteSelect = "10" and decodedInstruction = LH else
-                    std_logic_vector(RESIZE(UNSIGNED(data_i(15 downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LHU else
-                    std_logic_vector(RESIZE(UNSIGNED(data_i(31 downto  16)), 32)) when byteSelect = "10" and decodedInstruction = LHU else
+    halfExtended <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LH else
+                    std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), 32)) when byteSelect = "10" and decodedInstruction = LH else
+                    std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto  0)), 32)) when byteSelect = "00" and decodedInstruction = LHU else
+                    std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto  16)), 32)) when byteSelect = "10" and decodedInstruction = LHU else
                     (others => '0');
 				     
    
@@ -261,8 +264,8 @@ MUX_ALU: ALUoperand2 <= readData2 when opcode = "000000" or decodedInstruction =
     -- Data to data memory comes from the second read register at register file
     -- Assigns a byte from readData2 to the corrent position in data_o based on byteSelect for SB instruction
     -- For SW, takes the value from readData2 directly
-    data_o <= STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(7 downto 0)), data_o'length) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SB else
-              STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(15 downto 0)), data_o'length) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SH else
+    data_out <= STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(7 downto 0)), 32) sll TO_INTEGER(byteSelect)*8) when decodedInstruction = SB else
+              STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(15 downto 0)), data_out length) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SH else
               STD_LOGIC_VECTOR(readData2);
               
     
