@@ -22,7 +22,9 @@ package MIPS_pkg is
     function R_Type(instruction: std_logic_vector(31 downto 0)) return boolean;
     function WriteRegisterFile(instruction: Instruction_type)   return boolean;
     function LoadInstruction(instruction: Instruction_type)     return boolean;
-    function StoreInstruction(instruction: Instruction_type)    return boolean;    
+    function StoreInstruction(instruction: Instruction_type)    return boolean;
+    function BranchInstruction(instruction: Instruction_type)   return boolean;
+    function JumpInstruction(instruction: Instruction_type)     return boolean;
   
          
 end MIPS_pkg;
@@ -65,7 +67,10 @@ package body MIPS_pkg is
                 
                 elsif instruction(5 downto 0) = "001000" then
                     decodedInstruction := JR;
-
+ 
+                elsif instruction(5 downto 0) = "001001" then
+                    decodedInstruction := JALR;
+               
                 elsif instruction(5 downto 0) = "100110" then
                     decodedInstruction := XOOR;
 
@@ -154,7 +159,29 @@ package body MIPS_pkg is
             decodedInstruction := UNIMPLEMENTED_INSTRUCTION;
         end case;
         
-        return decodedInstruction;
+        case instruction(20 downto 16) is
+                    when "00001" => 
+            decodedInstruction := BGEZ;
+                   
+                    when "00000" => 
+            decodedInstruction := BLEZ;
+                    when others => null;
+                end case;
+            when "000010" => 
+                    decodedInstruction := J;
+        
+            when "000011" => 
+                     decodedInstruction := JAL;
+            when "001111" => 
+                if instruction(25 downto 21) = "00000" then
+                    decodedInstruction := LUI;
+                end if;
+            when "001110" => decodedInstruction := XORI;
+            when "001100" => decodedInstruction := ANDI;
+            when others => null;
+        end case;
+            
+            return decodedInstruction;
     
     end Decode;
 
@@ -168,7 +195,7 @@ package body MIPS_pkg is
         case (instruction) is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
                  NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU |
-                 LH | LHU | SLTI | SLTIU =>
+                 LH | LHU | SB | SH | |SLTI | SLTIU | JALR | =>
                 result := true;
             
             when others =>
@@ -179,43 +206,35 @@ package body MIPS_pkg is
     
     end WriteRegisterFile;
     
-    -- Returns 
-    --      true, if the instruction is load
-    --      false, otherwise
     function LoadInstruction(instruction: Instruction_type) return boolean is
-        variable result : boolean;
     begin
-        
-        case (instruction) is
-            when LW | LB | LBU | LH | LHU =>
-                result := true;
-            
-            when others =>
-                result := false;
+        case instruction is
+            when LW|LB|LBU|LH|LHU => return true;
+            when others => return false;
         end case;
-        
-        return result;
-        
     end LoadInstruction;
     
-    -- Returns 
-    --      true, if the instruction is store
-    --      false, otherwise    
     function StoreInstruction(instruction: Instruction_type) return boolean is
-        variable result : boolean;
     begin
-        
-        case (instruction) is
-            when SW | SB | SH =>
-                result := true;
-            
-            when others =>
-                result := false;
+        case instruction is
+            when SW|SB|SH => return true;
+            when others => return false;
         end case;
-        
-        return result;
-    
     end StoreInstruction;
     
+    function BranchInstruction(instruction: Instruction_type) return boolean is
+    begin
+        case instruction is
+            when BEQ|BNE|BGEZ|BLEZ => return true;
+            when others => return false;
+        end case;
+    end BranchInstruction;
     
+    function JumpInstruction(instruction: Instruction_type) return boolean is
+    begin
+        case instruction is
+            when J|JAL|JR|JALR => return true;
+            when others => return false;
+        end case;
+    end JumpInstruction;
 end MIPS_pkg;
