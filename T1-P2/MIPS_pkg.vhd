@@ -147,60 +147,52 @@ package body MIPS_pkg is
     
     end Decode;
 
-    -- Returns 
-    --      true, if the instruction writes to the register file
-    --      false, otherwise
+    -- Retorna verdadeiro se a instrucao escreve algum dado em registerFile
     function WriteRegisterFile(instruction: Instruction_type) return boolean is
-        variable result : boolean;
     begin
-        
-        case (instruction) is
+        case instruction is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
                  NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU |
-                 LH | LHU | SB | SH | |SLTI | SLTIU | JALR | =>
-                result := true;
-            
-            when others =>
-                result := false;
+                 LH | LHU | SB | SH | |SLTI | SLTIU | JALR => return true;
+            when others =>                                    return false;
         end case;
-        
-        return result;
-    
     end WriteRegisterFile;
-    
+
+    -- Retorna verdadeiro se a instrucao carrega algum dado da memoria
     function LoadInstruction(instruction: Instruction_type) return boolean is
     begin
         case instruction is
-            when LW|LB|LBU|LH|LHU => return true;
-            when others => 
-                 result := false;
+            when LW | LB | LBU | LH | LHU => return true;
+            when others =>                   return false;
         end case;
     end LoadInstruction;
-    
+
+    -- Retorna verdadeiro se a instrucao guarda algum dado na memoria
     function StoreInstruction(instruction: Instruction_type) return boolean is
     begin
         case instruction is
-            when SW|SB|SH => return true;
-            when others => 
-                 result := false;
+            when SW | SB | SH => return true;
+            when others =>       return false;
         end case;
     end StoreInstruction;
-    
+
+    -- Retorna verdadeiro se a instrucao realiza branch
     function BranchInstruction(instruction: Instruction_type) return boolean is
     begin
         case instruction is
-            when BEQ|BNE|BGEZ|BLEZ => return true;
-            when others => 
-                 result := false;
+            when BEQ | BNE | BGEZ | BLEZ => return true;
+            when others =>                  return false;
         end case;
     end BranchInstruction;
-    
+
+    -- Retorna verdadeiro se a instrucao realiza jump
     function JumpInstruction(instruction: Instruction_type) return boolean is
     begin
         case instruction is
-            when J|JAL|JR|JALR => return true;
-            when others => 
-                result := false;
+            when J | JAL | JR | JALR => return true;
+            when others =>              return false;
         end case;
     end JumpInstruction;
+
+
 end MIPS_pkg;
