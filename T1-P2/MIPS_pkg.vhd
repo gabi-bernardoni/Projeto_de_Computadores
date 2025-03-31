@@ -49,24 +49,23 @@ package body MIPS_pkg is
         decodedInstruction := UNIMPLEMENTED_INSTRUCTION; -- Invalid or not implemented instruction
     
         case(instruction(31 downto 26)) is
-            when "000000" => -- R-Type        
-                case(instruction(5 downto 0)) is
-                    when "100001" => decodedInstruction := ADDU;
-                    when "100011" => decodedInstruction := SUBU;
-                    when "100100" => decodedInstruction := AAND;
-                    when "100101" => decodedInstruction := OOR;
-                    when "101010" => decodedInstruction := SLT;
-                    when "001000" => decodedInstruction := JR;
-                    when "001001" => decodedInstruction := JALR;
-                    when "100110" => decodedInstruction := XOOR;
-                    when "100111" => decodedInstruction := NOOR;
-                    when "000000" => decodedInstruction := SHIFT_LL;
-                    when "000010" => decodedInstruction := SHIFT_RL;
-                    when "000011" => decodedInstruction := SHIFT_RA;
-                    when "000100" => decodedInstruction := SLLV;
-                    when "000110" => decodedInstruction := SRLV;
-                    when "000111" => decodedInstruction := SRAV;
-                end case;
+            when "000000" => -- R-Type
+                if    instruction(5 downto 0) = "100001" then decodedInstruction := ADDU;
+                elsif instruction(5 downto 0) = "100011" then decodedInstruction := SUBU;
+                elsif instruction(5 downto 0) = "100100" then decodedInstruction := AAND;
+                elsif instruction(5 downto 0) = "100101" then decodedInstruction := OOR;
+                elsif instruction(5 downto 0) = "101010" then decodedInstruction := SLT;
+                elsif instruction(5 downto 0) = "001000" then decodedInstruction := JR;
+                elsif instruction(5 downto 0) = "001001" then decodedInstruction := JALR;
+                elsif instruction(5 downto 0) = "100110" then decodedInstruction := XOOR;
+                elsif instruction(5 downto 0) = "100111" then decodedInstruction := NOOR;
+                elsif instruction(5 downto 0) = "000000" then decodedInstruction := SHIFT_LL;
+                elsif instruction(5 downto 0) = "000010" then decodedInstruction := SHIFT_RL;
+                elsif instruction(5 downto 0) = "000011" then decodedInstruction := SHIFT_RA;
+                elsif instruction(5 downto 0) = "000100" then decodedInstruction := SLLV;
+                elsif instruction(5 downto 0) = "000110" then decodedInstruction := SRLV;
+                elsif instruction(5 downto 0) = "000111" then decodedInstruction := SRAV;
+                end if;
             when "101011" => decodedInstruction := SW;
             when "100011" => decodedInstruction := LW;
             when "001001" => decodedInstruction := ADDIU;
