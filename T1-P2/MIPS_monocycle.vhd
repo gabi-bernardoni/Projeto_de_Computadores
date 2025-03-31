@@ -120,7 +120,7 @@ begin
     instructionFetchAddress <=
         branchTarget when (decodedInstruction = BEQ and zero = '1') or
                           (decodedInstruction = BNE and zero = '0') else 
-        jumpTarget   when decodedInstruction = J or decodedInstruction = JAL else
+        jumpTarget   when decodedInstruction = J  or decodedInstruction = JAL else
         ALUoperand1  when decodedInstruction = JR else
         pc;
                     
@@ -138,9 +138,9 @@ begin
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
         UNSIGNED(data_in)        when LoadInstruction(decodedInstruction) else
-        pc			 when decodedInstruction = JAL else
+        pc			             when decodedInstruction = JAL else
      	UNSIGNED(memSelecionada) when decodedInstruction = LB  or
-                				      decodedInstruction = LBU or
+				                      decodedInstruction = LBU or
                 				      decodedInstruction = LH  or
                 				      decodedInstruction = LHU else
         result;
