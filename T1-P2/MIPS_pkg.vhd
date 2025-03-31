@@ -129,18 +129,6 @@ package body MIPS_pkg is
             decodedInstruction := BLEZ;
                     when others => null;
                 end case;
-            when "000010" => 
-                    decodedInstruction := J;
-        
-            when "000011" => 
-                     decodedInstruction := JAL;
-            when "001111" => 
-                if instruction(25 downto 21) = "00000" then
-                    decodedInstruction := LUI;
-                end if;
-            when "001110" => decodedInstruction := XORI;
-            when "001100" => decodedInstruction := ANDI;
-            when others => null;
         end case;
             
             return decodedInstruction;
