@@ -138,10 +138,10 @@ begin
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
         UNSIGNED(data_in)         when LoadInstruction(decodedInstruction) and
-                                      (decodedInstruction = LBU  or
-                                       decodedInstruction = LBU  or
-                                       decodedInstruction = LBU  or
-                                       decodedInstruction = LBU) else
+                                      (decodedInstruction /= LBU  or
+                                       decodedInstruction /= LBU  or
+                                       decodedInstruction /= LBU  or
+                                       decodedInstruction /= LBU) else
         pc                        when decodedInstruction = JAL  else
      	UNSIGNED(byteSelecionado) when decodedInstruction = LB   or
                                        decodedInstruction = LBU  else
