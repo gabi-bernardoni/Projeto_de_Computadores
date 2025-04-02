@@ -50,7 +50,10 @@ architecture behavioral of MIPS_monocycle is
     alias instruction_imm   : std_logic_vector(15 downto 0) is instruction(15 downto 0);
        
     -- ALU zero flag
-    signal flagZero : std_logic;
+    signal flagZero     : std_logic;
+
+    -- Flag de resultado negativo da ULA
+    signal flagNegativo : std_logic;
     
     -- Locks the processor until the first clk rising edge
     signal lock: boolean;
@@ -218,10 +221,9 @@ begin
         ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
-    -- Generates the zero flag
+    -- Gera as flags de zero e negativo
     flagZero <= '1' when result = 0 else '0';
-      
-
+    flagNegativo <= result(31);
 
       
     ---------------------------
