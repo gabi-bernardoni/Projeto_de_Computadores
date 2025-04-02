@@ -93,7 +93,7 @@ begin
     -- MUX at the register file input (datapath diagram)
     MUX_RF: writeRegister <=
         UNSIGNED(instruction_rd) when R_Type(instruction) else -- R-type instructions
-        "11111" when decodedInstruction = JAL else    -- $ra ($31)
+        "11111" when decodedInstruction = JAL else -- $ra (registrador 31), contem PC + 4
         UNSIGNED(instruction_rt); -- Load instructions
       
     -- Sign extends the low 16 bits of instruction (I-Type immediate constant)
@@ -185,7 +185,7 @@ begin
         RESIZE(UNSIGNED(instruction_shamt), ALUoperand1'length) when (decodedInstruction = SHIFT_LL  or 
                                                                       decodedInstruction = SHIFT_RL  or 
                                                                       decodedInstruction = SHIFT_RA) else
-        registerFile(TO_INTEGER(UNSIGNED(instruction_rs)));
+        registerFile(TO_INTEGER(UNSIGNED(instruction_rs))); -- usado em JR
     
     -- Selects the second ALU operand
     -- In R-type or BEQ instructions, the second ALU operand comes from the register file
