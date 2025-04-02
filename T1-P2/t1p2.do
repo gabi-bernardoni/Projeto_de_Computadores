@@ -1,3 +1,4 @@
+set step 10ns
 onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate -format Logic /mips_monocycle_tb/mips_monocycle/rst
