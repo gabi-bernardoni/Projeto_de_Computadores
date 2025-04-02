@@ -208,16 +208,14 @@ begin
         ALUoperand2 srl TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_RL  else
         ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV      else
         ALUoperand2 srl TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SRLV      else
-        (0=>'1', others=>'0') when (decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2)) or
-                                 (decodedInstruction = SLTI and SIGNED(ALUoperand1) < SIGNED(signExtended)) or
-                                                  (decodedInstruction = SLTI and ALUoperand1 < ALUoperand2) or
-                                                (decodedInstruction = SLTIU and ALUoperand1 < zeroExtended) else
-              (others=>'0') when decodedInstruction = SLT or decodedInstruction = SLTI or
-                                decodedInstruction = SLTI or decodedInstruction = SLTIU else
-              ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI else
-              UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1))) when decodedInstruction = SHIFT_RA else
-              UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0)))) when decodedInstruction = SRAV else
-              ALUoperand1 + ALUoperand2;
+        (0 => '1', others => '0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
+        (others => '0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))     else
+        UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1)))
+                                           when decodedInstruction = SHIFT_RA else
+        UNSIGNED(SHIFT_LEFT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
+                                           when decodedInstruction = SRAV     else
+        ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI      else
+        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
     -- Generates the zero flag
