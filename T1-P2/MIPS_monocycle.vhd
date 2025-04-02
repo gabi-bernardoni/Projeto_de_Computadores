@@ -10,7 +10,7 @@ use work.MIPS_pkg.all;
 
 entity MIPS_monocycle is
     generic (
-        PC_START_ADDRESS    : UNSIGNED(31 downto 0) := (others=>'0') -- First instruction address
+        PC_START_ADDRESS    : UNSIGNED(31 downto 0) := (others => '0') -- First instruction address
     );
     port ( 
         clk, rst            : in std_logic;
@@ -124,7 +124,7 @@ begin
     instructionFetchAddress <=
         branchTarget when (decodedInstruction = BEQ  and flagZero = '1') or
                           (decodedInstruction = BNE  and flagZero = '0')         else
-        branchTarget when  decodedInstruction = BGEZ and negative = '0'          else
+        branchTarget when  decodedInstruction = BGEZ and flagNegativo = '0'      else
         jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL else
         ALUoperand1  when  decodedInstruction = JR                               else
         pc;
