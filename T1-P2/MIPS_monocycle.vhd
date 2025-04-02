@@ -10,7 +10,7 @@ use work.MIPS_pkg.all;
 
 entity MIPS_monocycle is
     generic (
-        PC_START_ADDRESS    : UNSIGNED(31 downto 0) := (others=>'0') -- First instruction address
+        PC_START_ADDRESS    : UNSIGNED(31 downto 0) := (others => '0') -- First instruction address
     );
     port ( 
         clk, rst            : in std_logic;
@@ -120,11 +120,13 @@ begin
     -- MUX which selects the source address of the next instruction 
     -- Not present in datapath diagram
     -- In case of jump/branch, PC must be bypassed due to synchronous memory read
+    -- BGEZ apenas verifica se o numero e positivo ou zero
     instructionFetchAddress <=
-        branchTarget when (decodedInstruction = BEQ and flagZero = '1') or
-                          (decodedInstruction = BNE and flagZero = '0') else 
-        jumpTarget   when decodedInstruction = J  or decodedInstruction = JAL else
-        ALUoperand1  when decodedInstruction = JR else
+        branchTarget when (decodedInstruction = BEQ  and flagZero = '1') or
+                          (decodedInstruction = BNE  and flagZero = '0')         else
+        branchTarget when  decodedInstruction = BGEZ and flagNegativo = '0'      else
+        jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL else
+        ALUoperand1  when  decodedInstruction = JR                               else
         pc;
                     
     -- Instruction memory addressing
@@ -207,6 +209,7 @@ begin
         ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
         ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
         ALUoperand1 nor ALUoperand2 when decodedInstruction = NOOR else
+        ALUoperand1                 when decodedInstruction = BGEZ else
         ALUoperand2 sll TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_LL  else
         ALUoperand2 srl TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_RL  else
         ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV      else
