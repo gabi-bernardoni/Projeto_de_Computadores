@@ -142,11 +142,11 @@ begin
                                        decodedInstruction = LBU  or
                                        decodedInstruction = LBU  or
                                        decodedInstruction = LBU) else
-        pc			  when decodedInstruction = JAL  else
+        pc                        when decodedInstruction = JAL  else
      	UNSIGNED(byteSelecionado) when decodedInstruction = LB   or
-				                       decodedInstruction = LBU  else
+                                       decodedInstruction = LBU  else
         UNSIGNED(halfSelecionado) when decodedInstruction = LH   or
-                				       decodedInstruction = LHU  else
+                                       decodedInstruction = LHU  else
         result;
     
     -- R-type, ADDIU, ORI and load instructions, store the result in the register file
