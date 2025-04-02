@@ -120,7 +120,8 @@ begin
     -- MUX which selects the source address of the next instruction 
     -- Not present in datapath diagram
     -- In case of jump/branch, PC must be bypassed due to synchronous memory read
-    -- BGEZ apenas verifica se o numero e positivo ou zero
+    -- BGEZ apenas verifica se o resultado e positivo ou zero
+    -- BLEZ verifica se o resultado e negativo ou zero
     instructionFetchAddress <=
         branchTarget when (decodedInstruction = BEQ  and flagZero = '1')     or
                           (decodedInstruction = BNE  and flagZero = '0')     or
