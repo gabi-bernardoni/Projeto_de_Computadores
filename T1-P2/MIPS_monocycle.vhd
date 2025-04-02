@@ -268,15 +268,15 @@ MUX_ALU: ALUoperand2 <= readData2 when R_Type(instruction) or decodedInstruction
               STD_LOGIC_VECTOR(RESIZE(UNSIGNED(readData2(15 downto 0)), data_out 'length) sll TO_INTEGER(byteSelect) * 8) when decodedInstruction = SH else
               STD_LOGIC_VECTOR(readData2);
               
-    
-    wbe <= "0001" when decodedInstruction = SB and byteSelect = "00" else
-           "0010" when decodedInstruction = SB and byteSelect = "01" else
-           "0100" when decodedInstruction = SB and byteSelect = "10" else
-           "1000" when decodedInstruction = SB and byteSelect = "11" else
-           "0011" when decodedInstruction = SH and byteSelect = "00" else -- lower half word
-           "1100" when decodedInstruction = SH and byteSelect = "10" else -- upper half word
-           "1111" when decodedInstruction = SW else
-           "0000";
+				      
+wbe <= "0001" when decodedInstruction = SB and result(1 downto 0) = "00" else  -- Byte no endereço 0
+       "0010" when decodedInstruction = SB and result(1 downto 0) = "01" else  -- Byte no endereço 1
+       "0100" when decodedInstruction = SB and result(1 downto 0) = "10" else  -- Byte no endereço 2
+       "1000" when decodedInstruction = SB and result(1 downto 0) = "11" else  -- Byte no endereço 3
+       "0011" when decodedInstruction = SH and result(1 downto 0) = "00" else  -- Halfword nos bytes 0 e 1
+       "1100" when decodedInstruction = SH and result(1 downto 0) = "10" else  -- Halfword nos bytes 2 e 3
+       "1111" when decodedInstruction = SW else                                -- Word completo (4 bytes)
+       "0000";                                                                -- Nenhuma escrita
     
     ce <= '1' when LoadInstruction(decodedInstruction) or StoreInstruction(decodedInstruction) else '0';
     
