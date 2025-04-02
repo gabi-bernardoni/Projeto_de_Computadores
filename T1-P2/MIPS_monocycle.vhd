@@ -127,9 +127,9 @@ begin
                           (decodedInstruction = BNE  and flagZero = '0')     or
                           (decodedInstruction = BGEZ and flagNegativo = '0') or
                           (decodedInstruction = BLEZ and (flagZero = '1' or
-                                                         flagNegativo = '1'))    else
-        jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL else
-        ALUoperand1  when  decodedInstruction = JR                               else
+                                                         flagNegativo = '1'))     else
+        jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL  else
+        ALUoperand1  when  decodedInstruction = JR   or decodedInstruction = JALR else
         pc;
                     
     -- Instruction memory addressing
@@ -150,7 +150,8 @@ begin
                                        decodedInstruction /= LBU  or
                                        decodedInstruction /= LBU  or
                                        decodedInstruction /= LBU) else
-        pc                        when decodedInstruction  = JAL  else
+        pc                        when decodedInstruction  = JAL  or
+                                       decodedInstruction  = JALR else
      	UNSIGNED(byteSelecionado) when decodedInstruction  = LB   or
                                        decodedInstruction  = LBU  else
         UNSIGNED(halfSelecionado) when decodedInstruction  = LH   or
@@ -185,7 +186,7 @@ begin
         RESIZE(UNSIGNED(instruction_shamt), ALUoperand1'length) when (decodedInstruction = SHIFT_LL  or 
                                                                       decodedInstruction = SHIFT_RL  or 
                                                                       decodedInstruction = SHIFT_RA) else
-        registerFile(TO_INTEGER(UNSIGNED(instruction_rs))); -- usado em JR
+        registerFile(TO_INTEGER(UNSIGNED(instruction_rs))); -- usado em JR e JALR
     
     -- Selects the second ALU operand
     -- In R-type or BEQ instructions, the second ALU operand comes from the register file
