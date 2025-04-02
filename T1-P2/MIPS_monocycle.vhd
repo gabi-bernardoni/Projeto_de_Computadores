@@ -50,7 +50,7 @@ architecture behavioral of MIPS_monocycle is
     alias instruction_imm   : std_logic_vector(15 downto 0) is instruction(15 downto 0);
        
     -- ALU zero flag
-    signal zero : std_logic;
+    signal flagZero : std_logic;
     
     -- Locks the processor until the first clk rising edge
     signal lock: boolean;
@@ -118,8 +118,8 @@ begin
     -- Not present in datapath diagram
     -- In case of jump/branch, PC must be bypassed due to synchronous memory read
     instructionFetchAddress <=
-        branchTarget when (decodedInstruction = BEQ and zero = '1') or
-                          (decodedInstruction = BNE and zero = '0') else 
+        branchTarget when (decodedInstruction = BEQ and flagZero = '1') or
+                          (decodedInstruction = BNE and flagZero = '0') else 
         jumpTarget   when decodedInstruction = J  or decodedInstruction = JAL else
         ALUoperand1  when decodedInstruction = JR else
         pc;
@@ -219,7 +219,7 @@ begin
 
 
     -- Generates the zero flag
-    zero <= '1' when result = 0 else '0';
+    flagZero <= '1' when result = 0 else '0';
       
 
 
