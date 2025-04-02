@@ -142,7 +142,7 @@ begin
                                        decodedInstruction = LBU  or
                                        decodedInstruction = LBU  or
                                        decodedInstruction = LBU) else
-        pc			              when decodedInstruction = JAL  else
+        pc			  when decodedInstruction = JAL  else
      	UNSIGNED(byteSelecionado) when decodedInstruction = LB   or
 				                       decodedInstruction = LBU  else
         UNSIGNED(halfSelecionado) when decodedInstruction = LH   or
