@@ -50,7 +50,10 @@ architecture behavioral of MIPS_monocycle is
     alias instruction_imm   : std_logic_vector(15 downto 0) is instruction(15 downto 0);
        
     -- ALU zero flag
-    signal zero : std_logic;
+    signal flagZero     : std_logic;
+
+    -- Flag de resultado negativo da ULA
+    signal flagNegativo : std_logic;
     
     -- Locks the processor until the first clk rising edge
     signal lock: boolean;
@@ -118,8 +121,8 @@ begin
     -- Not present in datapath diagram
     -- In case of jump/branch, PC must be bypassed due to synchronous memory read
     instructionFetchAddress <=
-        branchTarget when (decodedInstruction = BEQ and zero = '1') or
-                          (decodedInstruction = BNE and zero = '0') else 
+        branchTarget when (decodedInstruction = BEQ and flagZero = '1') or
+                          (decodedInstruction = BNE and flagZero = '0') else 
         jumpTarget   when decodedInstruction = J  or decodedInstruction = JAL else
         ALUoperand1  when decodedInstruction = JR else
         pc;
@@ -138,15 +141,15 @@ begin
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
         UNSIGNED(data_in)         when LoadInstruction(decodedInstruction) and
-                                      (decodedInstruction = LBU  or
-                                       decodedInstruction = LBU  or
-                                       decodedInstruction = LBU  or
-                                       decodedInstruction = LBU) else
-        pc                        when decodedInstruction = JAL  else
-     	UNSIGNED(byteSelecionado) when decodedInstruction = LB   or
-                                       decodedInstruction = LBU  else
-        UNSIGNED(halfSelecionado) when decodedInstruction = LH   or
-                                       decodedInstruction = LHU  else
+                                      (decodedInstruction /= LBU  or
+                                       decodedInstruction /= LBU  or
+                                       decodedInstruction /= LBU  or
+                                       decodedInstruction /= LBU) else
+        pc                        when decodedInstruction  = JAL  else
+     	UNSIGNED(byteSelecionado) when decodedInstruction  = LB   or
+                                       decodedInstruction  = LBU  else
+        UNSIGNED(halfSelecionado) when decodedInstruction  = LH   or
+                                       decodedInstruction  = LHU  else
         result;
     
     -- R-type, ADDIU, ORI and load instructions, store the result in the register file
@@ -218,10 +221,9 @@ begin
         ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
-    -- Generates the zero flag
-    zero <= '1' when result = 0 else '0';
-      
-
+    -- Gera as flags de zero e negativo
+    flagZero <= '1' when result = 0 else '0';
+    flagNegativo <= result(31);
 
       
     ---------------------------
