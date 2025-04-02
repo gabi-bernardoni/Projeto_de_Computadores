@@ -35,7 +35,7 @@ architecture behavioral of MIPS_monocycle is
            ALUoperand1, ALUoperand2, result,
            branchOffset, branchTarget, jumpTarget               : UNSIGNED(31 downto 0);
     signal writeRegister                                        : UNSIGNED(4 downto 0);
-    signal memSelecionada                                       : std_logic_vector(31 downto 0);
+    signal byteSelecionado, halfSelecionado                     : std_logic_vector(31 downto 0);
     signal regWrite                                             : std_logic;
     
     -- Register file
@@ -137,12 +137,16 @@ begin
     -- In load instructions the data comes from the data memory
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
-        UNSIGNED(data_in)        when LoadInstruction(decodedInstruction) else
-        pc			             when decodedInstruction = JAL else
-     	UNSIGNED(memSelecionada) when decodedInstruction = LB  or
-				                      decodedInstruction = LBU or
-                				      decodedInstruction = LH  or
-                				      decodedInstruction = LHU else
+        UNSIGNED(data_in)         when LoadInstruction(decodedInstruction) and
+                                      (decodedInstruction = LBU  or
+                                       decodedInstruction = LBU  or
+                                       decodedInstruction = LBU  or
+                                       decodedInstruction = LBU) else
+        pc                        when decodedInstruction = JAL  else
+     	UNSIGNED(byteSelecionado) when decodedInstruction = LB   or
+                                       decodedInstruction = LBU  else
+        UNSIGNED(halfSelecionado) when decodedInstruction = LH   or
+                                       decodedInstruction = LHU  else
         result;
     
     -- R-type, ADDIU, ORI and load instructions, store the result in the register file
@@ -204,16 +208,14 @@ begin
         ALUoperand2 srl TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_RL  else
         ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV      else
         ALUoperand2 srl TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SRLV      else
-        (0=>'1', others=>'0') when (decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2)) or
-                                 (decodedInstruction = SLTI and SIGNED(ALUoperand1) < SIGNED(signExtended)) or
-                                                  (decodedInstruction = SLTI and ALUoperand1 < ALUoperand2) or
-                                                (decodedInstruction = SLTIU and ALUoperand1 < zeroExtended) else
-              (others=>'0') when decodedInstruction = SLT or decodedInstruction = SLTI or
-                                decodedInstruction = SLTI or decodedInstruction = SLTIU else
-              ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI else
-              UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1))) when decodedInstruction = SHIFT_RA else
-              UNSIGNED(shift_right(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0)))) when decodedInstruction = SRAV else
-              ALUoperand1 + ALUoperand2;
+        (0 => '1', others => '0') when decodedInstruction = SLT and SIGNED(ALUoperand1) < SIGNED(ALUoperand2) else
+        (others => '0') when decodedInstruction = SLT and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))     else
+        UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1)))
+                                           when decodedInstruction = SHIFT_RA else
+        UNSIGNED(SHIFT_LEFT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
+                                           when decodedInstruction = SRAV     else
+        ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI      else
+        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
     -- Generates the zero flag
@@ -229,32 +231,36 @@ begin
     -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado
     -- dois ultimos bits de data_in
     process(data_in, result)
-        variable byteSelecionado        : std_logic_vector(7 downto 0);
-        variable meiaPalavraSelecionada : std_logic_vector(15 downto 0);
     begin
-        if decodedInstruction = LB or decodedInstruction = LBU then
+        if decodedInstruction = LB then
             case result(1 downto 0) is
-                when "00" => byteSelecionado := data_in(7 downto 0);
-                when "01" => byteSelecionado := data_in(15 downto 8);
-                when "10" => byteSelecionado := data_in(23 downto 16);
-                when "11" => byteSelecionado := data_in(31 downto 24);
-                when others => byteSelecionado := (others => '0');
+                when "00" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(7 downto 0)), byteSelecionado'length));
+                when "01" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 8)), byteSelecionado'length));
+                when "10" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(23 downto 16)), byteSelecionado'length));
+                when "11" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 24)), byteSelecionado'length));
+                when others => byteSelecionado <= (others => '0'); -- apesar de todos os casos serem cobertos, o compilador dá um erro
             end case;
-        elsif decodedInstruction = LH or decodedInstruction = LHU then
+        elsif decodedInstruction = LBU then
             case result(1 downto 0) is
-                when "00" => meiaPalavraSelecionada := data_in(15 downto 0);
-                when "10" => meiaPalavraSelecionada := data_in(31 downto 16);
-                when others => meiaPalavraSelecionada := (others => '0');
+                when "00" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(7 downto 0)), byteSelecionado'length));
+                when "01" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 8)), byteSelecionado'length));
+                when "10" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(23 downto 16)), byteSelecionado'length));
+                when "11" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 24)), byteSelecionado'length));
+                when others => byteSelecionado <= (others => '0');
+            end case;
+        elsif decodedInstruction = LH then
+            case result(1 downto 0) is
+                when "00" => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), halfSelecionado'length));
+                when "10" => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), halfSelecionado'length));
+                when others => halfSelecionado <= (others => '0');
+            end case;                                                   
+        elsif decodedInstruction = LHU then
+            case result(1 downto 0) is
+                when "00" => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), halfSelecionado'length));
+                when "10" => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), halfSelecionado'length));
+                when others => halfSelecionado <= (others => '0');
             end case;
         end if;
-
-        case decodedInstruction is
-        	when LB	=>  memSelecionada <= std_logic_vector(RESIZE(SIGNED(byteSelecionado), memSelecionada'length));
-        	when LBU => memSelecionada <= std_logic_vector(RESIZE(UNSIGNED(byteSelecionado), memSelecionada'length));
-        	when LH =>  memSelecionada <= std_logic_vector(RESIZE(SIGNED(meiaPalavraSelecionada), memSelecionada'length));
-        	when LHU => memSelecionada <= std_logic_vector(RESIZE(UNSIGNED(meiaPalavraSelecionada), memSelecionada'length));
-        	when others => memSelecionada <= (others => '0');
-	    end case;
     end process;
 
     
