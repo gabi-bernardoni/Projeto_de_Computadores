@@ -122,9 +122,11 @@ begin
     -- In case of jump/branch, PC must be bypassed due to synchronous memory read
     -- BGEZ apenas verifica se o numero e positivo ou zero
     instructionFetchAddress <=
-        branchTarget when (decodedInstruction = BEQ  and flagZero = '1') or
-                          (decodedInstruction = BNE  and flagZero = '0')         else
-        branchTarget when  decodedInstruction = BGEZ and flagNegativo = '0'      else
+        branchTarget when (decodedInstruction = BEQ  and flagZero = '1')     or
+                          (decodedInstruction = BNE  and flagZero = '0')     or
+                          (decodedInstruction = BGEZ and flagNegativo = '0') or
+                          (decodedInstruction = BLEZ and (flagZero = '1' or
+                                                         flagNegativo = '1'))    else
         jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL else
         ALUoperand1  when  decodedInstruction = JR                               else
         pc;
@@ -209,7 +211,8 @@ begin
         ALUoperand1 or  ALUoperand2 when decodedInstruction = OOR  or decodedInstruction = ORI  else 
         ALUoperand1 xor ALUoperand2 when decodedInstruction = XOOR or decodedInstruction = XORI else
         ALUoperand1 nor ALUoperand2 when decodedInstruction = NOOR else
-        ALUoperand1                 when decodedInstruction = BGEZ else
+        ALUoperand1                 when decodedInstruction = BGEZ or
+                                         decodedInstruction = BLEZ else
         ALUoperand2 sll TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_LL  else
         ALUoperand2 srl TO_INTEGER(ALUoperand1)             when decodedInstruction = SHIFT_RL  else
         ALUoperand2 sll TO_INTEGER(ALUoperand1(4 downto 0)) when decodedInstruction = SLLV      else
