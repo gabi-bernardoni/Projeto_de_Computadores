@@ -284,15 +284,15 @@ begin
     begin
         if decodedInstruction = SB then
             case result(1 downto 0) is
-                when "00"   => data_out <= readData2(7 downto 0) & x"000000";
-                when "01"   => data_out <= x"00" & readData2(7 downto 0) & x"0000";
-                when "10"   => data_out <= x"0000" & readData2(7 downto 0) & x"00";
-                when others => data_out <= x"000000" & readData2(7 downto 0);
+                when "00"   => data_out <= std_logic_vector(readData2(7 downto 0)) & x"000000";
+                when "01"   => data_out <= x"00" & std_logic_vector(readData2(7 downto 0)) & x"0000";
+                when "10"   => data_out <= x"0000" & std_logic_vector(readData2(7 downto 0)) & x"00";
+                when others => data_out <= x"000000" & std_logic_vector(readData2(7 downto 0));
             end case;
         elsif decodedInstruction = SH then
             case result(1 downto 0) is
-                when "00"   => data_out <= readData2(15 downto 0) & x"0000";
-                when "10"   => data_out <= x"0000" & readData2(15 downto 0);
+                when "00"   => data_out <= std_logic_vector(readData2(15 downto 0)) & x"0000";
+                when "10"   => data_out <= x"0000" & std_logic_vector(readData2(15 downto 0));
                 when others => assert false report "Acesso de memoria desalinhado em SH" severity failure;
             end case;
         else
