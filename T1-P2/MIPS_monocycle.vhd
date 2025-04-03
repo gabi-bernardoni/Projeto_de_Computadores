@@ -277,10 +277,27 @@ begin
         end if;
     end process;
 
-    
-    
-    -- ALU output address the data memory
-    dataAddress <= STD_LOGIC_VECTOR(result);
+
+    process(readData2, result)
+    begin
+        if decodedInstruction = SB then
+            case result(1 downto 0) is
+                when "00"   => data_out <= readData2(7 downto 0) & x"000000";
+                when "01"   => data_out <= x"00" & readData2(7 downto 0) & x"0000";
+                when "10"   => data_out <= x"0000" & readData2(7 downto 0) & x"00";
+                when others => data_out <= x"000000" & readData2(7 downto 0);
+            end case;
+        elsif decodedInstruction = SH then
+            case result(1 downto 0) is
+                when "00"   => data_out <= readData2(15 downto 0) & x"0000";
+                when "10"   => data_out <= x"0000" & readData2(15 downto 0);
+                when others => assert false report "Acesso de memoria desalinhado em SH" severity failure;
+            end case;
+        else
+            data_out <= STD_LOGIC_VECTOR(readData2); -- Para SW e outras instruções
+        end if;
+    end process;
+
     
     -- Data to data memory comes from the second read register at register file
     data_out <= STD_LOGIC_VECTOR(readData2);
