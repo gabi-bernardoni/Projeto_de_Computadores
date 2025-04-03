@@ -127,9 +127,9 @@ begin
                           (decodedInstruction = BNE  and flagZero = '0')     or
                           (decodedInstruction = BGEZ and flagNegativo = '0') or
                           (decodedInstruction = BLEZ and (flagZero = '1' or
-                                                         flagNegativo = '1'))    else
-        jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL else
-        ALUoperand1  when  decodedInstruction = JR                               else
+                                                         flagNegativo = '1'))     else
+        jumpTarget   when  decodedInstruction = J    or decodedInstruction = JAL  else
+        ALUoperand1  when  decodedInstruction = JR   or decodedInstruction = JALR else
         pc;
                     
     -- Instruction memory addressing
@@ -146,11 +146,12 @@ begin
     -- MUX at the data memory output
     MUX_DATA_MEM: writeData <=
         UNSIGNED(data_in)         when LoadInstruction(decodedInstruction) and
-                                      (decodedInstruction /= LBU  or
-                                       decodedInstruction /= LBU  or
-                                       decodedInstruction /= LBU  or
-                                       decodedInstruction /= LBU) else
-        pc                        when decodedInstruction  = JAL  else
+                                      (decodedInstruction /= LB   and
+                                       decodedInstruction /= LBU  and
+                                       decodedInstruction /= LH   and
+                                       decodedInstruction /= LHU) else
+        pc                        when decodedInstruction  = JAL  or
+                                       decodedInstruction  = JALR else
      	UNSIGNED(byteSelecionado) when decodedInstruction  = LB   or
                                        decodedInstruction  = LBU  else
         UNSIGNED(halfSelecionado) when decodedInstruction  = LH   or
@@ -185,7 +186,7 @@ begin
         RESIZE(UNSIGNED(instruction_shamt), ALUoperand1'length) when (decodedInstruction = SHIFT_LL  or 
                                                                       decodedInstruction = SHIFT_RL  or 
                                                                       decodedInstruction = SHIFT_RA) else
-        registerFile(TO_INTEGER(UNSIGNED(instruction_rs))); -- usado em JR
+        registerFile(TO_INTEGER(UNSIGNED(instruction_rs))); -- usado em JR e JALR
     
     -- Selects the second ALU operand
     -- In R-type or BEQ instructions, the second ALU operand comes from the register file
@@ -229,7 +230,7 @@ begin
         UNSIGNED(SHIFT_LEFT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
                                            when decodedInstruction = SRAV     else
         ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI      else
-        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
+        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDI, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
     -- Gera as flags de zero e negativo
@@ -247,31 +248,29 @@ begin
     begin
         if decodedInstruction = LB then
             case result(1 downto 0) is
-                when "00" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(7 downto 0)), byteSelecionado'length));
-                when "01" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 8)), byteSelecionado'length));
-                when "10" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(23 downto 16)), byteSelecionado'length));
-                when "11" => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 24)), byteSelecionado'length));
-                when others => byteSelecionado <= (others => '0'); -- apesar de todos os casos serem cobertos, o compilador dá um erro
+                when "00"   => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(7 downto 0)), byteSelecionado'length));
+                when "01"   => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 8)), byteSelecionado'length));
+                when "10"   => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(23 downto 16)), byteSelecionado'length));
+                when others => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 24)), byteSelecionado'length));
             end case;
         elsif decodedInstruction = LBU then
             case result(1 downto 0) is
-                when "00" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(7 downto 0)), byteSelecionado'length));
-                when "01" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 8)), byteSelecionado'length));
-                when "10" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(23 downto 16)), byteSelecionado'length));
-                when "11" => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 24)), byteSelecionado'length));
-                when others => byteSelecionado <= (others => '0');
+                when "00"   => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(7 downto 0)), byteSelecionado'length));
+                when "01"   => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 8)), byteSelecionado'length));
+                when "10"   => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(23 downto 16)), byteSelecionado'length));
+                when others => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 24)), byteSelecionado'length));
             end case;
         elsif decodedInstruction = LH then
             case result(1 downto 0) is
-                when "00" => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), halfSelecionado'length));
-                when "10" => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), halfSelecionado'length));
-                when others => halfSelecionado <= (others => '0');
+                when "00"   => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), halfSelecionado'length));
+                when "10"   => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), halfSelecionado'length));
+                when others => assert false report "Acesso de memoria desalinhado em LH" severity failure;
             end case;                                                   
         elsif decodedInstruction = LHU then
             case result(1 downto 0) is
-                when "00" => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), halfSelecionado'length));
-                when "10" => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), halfSelecionado'length));
-                when others => halfSelecionado <= (others => '0');
+                when "00"   => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), halfSelecionado'length));
+                when "10"   => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), halfSelecionado'length));
+                when others => assert false report "Acesso de memoria desalinhado em LHU" severity failure;
             end case;
         end if;
     end process;
