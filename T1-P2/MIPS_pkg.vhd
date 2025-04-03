@@ -14,7 +14,7 @@ package MIPS_pkg is
         UNIMPLEMENTED_INSTRUCTION, NOP, ADDU, SUBU, AAND, OOR, SW, LW, ADDIU, 
         ORI, SLT, BEQ, J, JR, JAL, LUI, XOOR, XORI, NOOR, ANDI, BNE, SHIFT_LL,
         SHIFT_RL, SHIFT_RA, SLLV, SRLV, SRAV, LB, LBU, LH, LHU, SB, SH, SLTI,
-        SLTU, SLTIU, BGEZ, BLEZ, JALR
+        SLTU, SLTIU, BGEZ, BLEZ, JALR, ADDI
     );
     
     -- Functions used to facilitate the processor description
@@ -69,6 +69,7 @@ package body MIPS_pkg is
                 end if;
             when "101011" => decodedInstruction := SW;
             when "100011" => decodedInstruction := LW;
+            when "001000" => decodedInstruction := ADDI;
             when "001001" => decodedInstruction := ADDIU;
             when "001101" => decodedInstruction := ORI;
             when "000100" => decodedInstruction := BEQ;
@@ -110,8 +111,8 @@ package body MIPS_pkg is
         case instruction is
             when ADDU | SUBU | AAND | OOR | SLT | LW | ADDIU | ORI | LUI | JAL | XOOR | XORI |
                  NOOR | ANDI | SHIFT_LL | SHIFT_RL | SHIFT_RA | SLLV | SRLV | SRAV | LB | LBU |
-                 LH | LHU | SB | SH | SLTU | SLTI | SLTIU | JALR => return true;
-            when others =>                                          return false;
+                 LH | LHU | SB | SH | SLTU | SLTI | SLTIU | JALR | ADDI => return true;
+            when others =>                                                 return false;
         end case;
     end WriteRegisterFile;
 
