@@ -35,7 +35,7 @@ architecture behavioral of MIPS_monocycle is
            ALUoperand1, ALUoperand2, result,
            branchOffset, branchTarget, jumpTarget               : UNSIGNED(31 downto 0);
     signal writeRegister                                        : UNSIGNED(4 downto 0);
-    signal byteSelecionado, halfSelecionado                     : std_logic_vector(31 downto 0);
+    signal dadoSelecionado                                      : std_logic_vector(31 downto 0);
     signal regWrite                                             : std_logic;
     
     -- Register file
@@ -150,12 +150,12 @@ begin
                                        decodedInstruction /= LBU  and
                                        decodedInstruction /= LH   and
                                        decodedInstruction /= LHU) else
+     	UNSIGNED(dadoSelecionado) when decodedInstruction  = LB   or
+                                       decodedInstruction  = LBU  or
+                                       decodedInstruction  = LH   or
+                                       decodedInstruction  = LHU  else
         pc                        when decodedInstruction  = JAL  or
                                        decodedInstruction  = JALR else
-     	UNSIGNED(byteSelecionado) when decodedInstruction  = LB   or
-                                       decodedInstruction  = LBU  else
-        UNSIGNED(halfSelecionado) when decodedInstruction  = LH   or
-                                       decodedInstruction  = LHU  else
         result;
     
     -- R-type, ADDIU, ORI and load instructions, store the result in the register file
@@ -166,7 +166,7 @@ begin
     begin
     
         if rst = '1' then
-            registerFile(0) <= (others=>'0');
+            registerFile(0) <= (others => '0');
             --for i in 0 to 31 loop   
             --    registerFile(i) <= (others=>'0');  
             --end loop;
@@ -246,63 +246,34 @@ begin
 
     -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado nos
     -- dois ultimos bits do resultado da ULA
-    process(data_in, result)
-    begin
-        if decodedInstruction = LB then
-            case result(1 downto 0) is
-                when "00"   => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(7 downto 0)), byteSelecionado'length));
-                when "01"   => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 8)), byteSelecionado'length));
-                when "10"   => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(23 downto 16)), byteSelecionado'length));
-                when others => byteSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 24)), byteSelecionado'length));
-            end case;
-        elsif decodedInstruction = LBU then
-            case result(1 downto 0) is
-                when "00"   => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(7 downto 0)), byteSelecionado'length));
-                when "01"   => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 8)), byteSelecionado'length));
-                when "10"   => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(23 downto 16)), byteSelecionado'length));
-                when others => byteSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 24)), byteSelecionado'length));
-            end case;
-        elsif decodedInstruction = LH then
-            case result(1 downto 0) is
-                when "00"   => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), halfSelecionado'length));
-                when "10"   => halfSelecionado <= std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), halfSelecionado'length));
-                when others => assert false report "Acesso de memoria desalinhado em LH" severity failure;
-            end case;                                                   
-        elsif decodedInstruction = LHU then
-            case result(1 downto 0) is
-                when "00"   => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), halfSelecionado'length));
-                when "10"   => halfSelecionado <= std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), halfSelecionado'length));
-                when others => assert false report "Acesso de memoria desalinhado em LHU" severity failure;
-            end case;
-        end if;
-    end process;
+    dadoSelecionado <=
+        std_logic_vector(RESIZE(SIGNED(data_in(7 downto 0)), dadoSelecionado'length))     when (decodedInstruction = LB  and result(1 downto 0) = "00") else
+        std_logic_vector(RESIZE(SIGNED(data_in(15 downto 8)), dadoSelecionado'length))    when (decodedInstruction = LB  and result(1 downto 0) = "01") else
+        std_logic_vector(RESIZE(SIGNED(data_in(23 downto 16)), dadoSelecionado'length))   when (decodedInstruction = LB  and result(1 downto 0) = "10") else
+        std_logic_vector(RESIZE(SIGNED(data_in(31 downto 24)), dadoSelecionado'length))   when (decodedInstruction = LB  and result(1 downto 0) = "11") else
+        std_logic_vector(RESIZE(UNSIGNED(data_in(7 downto 0)), dadoSelecionado'length))   when (decodedInstruction = LBU and result(1 downto 0) = "00") else
+        std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 8)), dadoSelecionado'length))  when (decodedInstruction = LBU and result(1 downto 0) = "01") else
+        std_logic_vector(RESIZE(UNSIGNED(data_in(23 downto 16)), dadoSelecionado'length)) when (decodedInstruction = LBU and result(1 downto 0) = "10") else
+        std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 24)), dadoSelecionado'length)) when (decodedInstruction = LBU and result(1 downto 0) = "11") else
+        std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), dadoSelecionado'length))    when (decodedInstruction = LH  and result(1 downto 0) = "00") else
+        std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), dadoSelecionado'length))   when (decodedInstruction = LH  and result(1 downto 0) = "10") else
+        std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), dadoSelecionado'length))  when (decodedInstruction = LHU and result(1 downto 0) = "00") else
+        std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), dadoSelecionado'length)) when (decodedInstruction = LHU and result(1 downto 0) = "10") else
+        (others => '0');
 
 
     -- Escolhe qual parte da palavra sera usada nas instrucoes de store byte/store half baseado nos
     -- dois ultimos bits do resultado da ULA
-    process(readData2, result)
-    begin
-        if decodedInstruction = SB then
-            case result(1 downto 0) is
-                when "00"   => data_out <= std_logic_vector(readData2(7 downto 0)) & x"000000";
-                when "01"   => data_out <= x"00" & std_logic_vector(readData2(7 downto 0)) & x"0000";
-                when "10"   => data_out <= x"0000" & std_logic_vector(readData2(7 downto 0)) & x"00";
-                when others => data_out <= x"000000" & std_logic_vector(readData2(7 downto 0));
-            end case;
-        elsif decodedInstruction = SH then
-            case result(1 downto 0) is
-                when "00"   => data_out <= std_logic_vector(readData2(15 downto 0)) & x"0000";
-                when "10"   => data_out <= x"0000" & std_logic_vector(readData2(15 downto 0));
-                when others => assert false report "Acesso de memoria desalinhado em SH" severity failure;
-            end case;
-        else
-            data_out <= STD_LOGIC_VECTOR(readData2); -- para SW
-        end if;
-    end process;
+    data_out <=
+        std_logic_vector(readData2(7 downto 0)) & x"000000"       when (decodedInstruction = SB and result(1 downto 0) = "00") else
+        x"00" & std_logic_vector(readData2(7 downto 0)) & x"0000" when (decodedInstruction = SB and result(1 downto 0) = "01") else
+        x"0000" & std_logic_vector(readData2(7 downto 0)) & x"00" when (decodedInstruction = SB and result(1 downto 0) = "10") else
+        x"000000" & std_logic_vector(readData2(7 downto 0))       when (decodedInstruction = SB and result(1 downto 0) = "11") else
+        std_logic_vector(readData2(15 downto 0)) & x"0000"        when (decodedInstruction = SH and result(1 downto 0) = "00") else
+        x"0000" & std_logic_vector(readData2(15 downto 0))        when (decodedInstruction = SH and result(1 downto 0) = "10") else
+        std_logic_vector(readData2); -- Para SW - Data to data memory comes from the second read register at register file
 
     
-    -- Data to data memory comes from the second read register at register file
-    data_out <= STD_LOGIC_VECTOR(readData2);
     
     wbe <= "0001" when decodedInstruction = SB and result(1 downto 0) = "00" else
            "0010" when decodedInstruction = SB and result(1 downto 0) = "01" else
