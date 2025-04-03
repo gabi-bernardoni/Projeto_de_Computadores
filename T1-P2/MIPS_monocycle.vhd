@@ -223,8 +223,10 @@ begin
                                         decodedInstruction = SLTI) and      SIGNED(ALUoperand1) < SIGNED(ALUoperand2)      else
                   (others => '0') when (decodedInstruction = SLT   or
                                         decodedInstruction = SLTI) and not (SIGNED(ALUoperand1) < SIGNED(ALUoperand2))     else
-        (0 => '1', others => '0') when  decodedInstruction = SLTIU and      UNSIGNED(ALUoperand1) < UNSIGNED(ALUoperand2)  else
-                  (others => '0') when  decodedInstruction = SLTIU and not (UNSIGNED(ALUoperand1) < UNSIGNED(ALUoperand2)) else
+        (0 => '1', others => '0') when (decodedInstruction = SLTIU or
+                                        decodedInstruction = SLTU) and      UNSIGNED(ALUoperand1) < UNSIGNED(ALUoperand2)  else
+                  (others => '0') when (decodedInstruction = SLTIU or
+                                        decodedInstruction = SLTU) and not (UNSIGNED(ALUoperand1) < UNSIGNED(ALUoperand2)) else
         UNSIGNED(SHIFT_RIGHT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1)))
                                            when decodedInstruction = SHIFT_RA else
         UNSIGNED(SHIFT_LEFT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
