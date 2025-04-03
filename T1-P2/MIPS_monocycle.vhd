@@ -244,8 +244,8 @@ begin
     -- Data memory interface --
     ---------------------------
 
-    -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado
-    -- dois ultimos bits de data_in
+    -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado nos
+    -- dois ultimos bits do resultado da ULA
     process(data_in, result)
     begin
         if decodedInstruction = LB then
@@ -278,6 +278,8 @@ begin
     end process;
 
 
+    -- Escolhe qual parte da palavra sera usada nas instrucoes de store byte/store half baseado nos
+    -- dois ultimos bits do resultado da ULA
     process(readData2, result)
     begin
         if decodedInstruction = SB then
@@ -294,7 +296,7 @@ begin
                 when others => assert false report "Acesso de memoria desalinhado em SH" severity failure;
             end case;
         else
-            data_out <= STD_LOGIC_VECTOR(readData2); -- Para SW e outras instruções
+            data_out <= STD_LOGIC_VECTOR(readData2); -- para SW
         end if;
     end process;
 
