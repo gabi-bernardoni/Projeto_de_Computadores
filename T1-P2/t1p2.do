@@ -13,6 +13,7 @@ add wave -noupdate -format Literal -radix hexadecimal -expand /mips_monocycle_tb
 add wave -noupdate -divider {Memória de dados}
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/dataaddress
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/data_in
+add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/data_out
 add wave -noupdate -format Logic /mips_monocycle_tb/data_memory/ce
 add wave -noupdate -format Literal -radix hexadecimal -expand /mips_monocycle_tb/data_memory/memoryarray
 
