@@ -244,8 +244,8 @@ begin
     -- Data memory interface --
     ---------------------------
 
-    -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado
-    -- dois ultimos bits de data_in
+    -- Escolhe qual parte da palavra sera usada nas instrucoes de load byte/load half baseado nos
+    -- dois ultimos bits do resultado da ULA
     process(data_in, result)
     begin
         if decodedInstruction = LB then
@@ -277,18 +277,41 @@ begin
         end if;
     end process;
 
-    
-    
-    -- ALU output address the data memory
-    dataAddress <= STD_LOGIC_VECTOR(result);
+
+    -- Escolhe qual parte da palavra sera usada nas instrucoes de store byte/store half baseado nos
+    -- dois ultimos bits do resultado da ULA
+    process(readData2, result)
+    begin
+        if decodedInstruction = SB then
+            case result(1 downto 0) is
+                when "00"   => data_out <= readData2(7 downto 0) & x"000000";
+                when "01"   => data_out <= x"00" & readData2(7 downto 0) & x"0000";
+                when "10"   => data_out <= x"0000" & readData2(7 downto 0) & x"00";
+                when others => data_out <= x"000000" & readData2(7 downto 0);
+            end case;
+        elsif decodedInstruction = SH then
+            case result(1 downto 0) is
+                when "00"   => data_out <= readData2(15 downto 0) & x"0000";
+                when "10"   => data_out <= x"0000" & readData2(15 downto 0);
+                when others => assert false report "Acesso de memoria desalinhado em SH" severity failure;
+            end case;
+        else
+            data_out <= STD_LOGIC_VECTOR(readData2); -- para SW
+        end if;
+    end process;
+
     
     -- Data to data memory comes from the second read register at register file
     data_out <= STD_LOGIC_VECTOR(readData2);
     
-    wbe <= "1111" when decodedInstruction = SW else 
-           "0011" when decodedInstruction = SH else   
-           "0001" when decodedInstruction = SB else   
-           "0000";                                                           
+    wbe <= "0001" when decodedInstruction = SB and result(1 downto 0) = "00" else
+           "0010" when decodedInstruction = SB and result(1 downto 0) = "01" else
+           "0100" when decodedInstruction = SB and result(1 downto 0) = "10" else
+           "1000" when decodedInstruction = SB and result(1 downto 0) = "11" else
+           "0011" when decodedInstruction = SH and result(1 downto 0) = "00" else
+           "1100" when decodedInstruction = SH and result(1 downto 0) = "10" else
+           "1111" when decodedInstruction = SW else
+           "0000";                                              
     
     ce <= '1' when LoadInstruction(decodedInstruction) or StoreInstruction(decodedInstruction) else '0';
     
