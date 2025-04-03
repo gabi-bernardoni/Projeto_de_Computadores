@@ -273,7 +273,8 @@ begin
         x"0000" & std_logic_vector(readData2(15 downto 0))        when (decodedInstruction = SH and result(1 downto 0) = "10") else
         std_logic_vector(readData2); -- Para SW - Data to data memory comes from the second read register at register file
 
-    
+    -- ALU output address the data memory
+    dataAddress <= STD_LOGIC_VECTOR(result);
     
     wbe <= "0001" when decodedInstruction = SB and result(1 downto 0) = "00" else
            "0010" when decodedInstruction = SB and result(1 downto 0) = "01" else
