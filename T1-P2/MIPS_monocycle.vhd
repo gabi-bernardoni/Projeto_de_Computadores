@@ -226,7 +226,7 @@ begin
         UNSIGNED(SHIFT_LEFT(SIGNED(ALUoperand2), TO_INTEGER(ALUoperand1(4 downto 0))))
                                            when decodedInstruction = SRAV     else
         ALUoperand2(15 downto 0) & x"0000" when decodedInstruction = LUI      else
-        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDIU, SW, LW, LB, LBU, LH e LHU
+        ALUoperand1 + ALUoperand2;    -- usado em ADDU, ADDI, ADDIU, SW, LW, LB, LBU, LH e LHU
 
 
     -- Gera as flags de zero e negativo
