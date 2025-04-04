@@ -20,11 +20,12 @@ add wave -noupdate -format Literal -radix unsigned /mips_monocycle_tb/MIPS_MONOC
 add wave -noupdate -format Literal -radix hexadecimal -expand /mips_monocycle_tb/mips_monocycle/registerfile
 add wave -noupdate -divider {Memória de dados}
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/dataaddress
-add wave -noupdate -format Literal -radix binary /mips_monocycle_tb/MIPS_MONOCYCLE/wbe
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/mips_monocycle/data_in
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/data_out
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/MIPS_MONOCYCLE/writeData
 add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/MIPS_MONOCYCLE/readData2
+add wave -noupdate -format Literal -radix hexadecimal /mips_monocycle_tb/MIPS_MONOCYCLE/dadoSelecionado
+add wave -noupdate -format Literal -radix binary /mips_monocycle_tb/MIPS_MONOCYCLE/wbe
 add wave -noupdate -format Logic /mips_monocycle_tb/data_memory/ce
 add wave -noupdate -format Literal -radix hexadecimal -expand /mips_monocycle_tb/data_memory/memoryarray
 
