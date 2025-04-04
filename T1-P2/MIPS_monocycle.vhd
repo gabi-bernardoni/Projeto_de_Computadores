@@ -236,8 +236,8 @@ begin
 
 
     -- Gera as flags de zero e negativo
-    flagZero <= '1' when result = 0 else '0';
-    flagNegativo <= result(31);
+    flagZero     <= '1' when result = 0 else '0';
+    flagNegativo <= '1' when SIGNED(result) < 0 else '0';
 
       
     ---------------------------
