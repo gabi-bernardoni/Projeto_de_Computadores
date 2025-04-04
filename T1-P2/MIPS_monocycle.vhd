@@ -258,7 +258,8 @@ begin
         std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), dadoSelecionado'length))    when (decodedInstruction = LH  and result(1 downto 0) = "00") else
         std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), dadoSelecionado'length))   when (decodedInstruction = LH  and result(1 downto 0) = "10") else
         std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), dadoSelecionado'length))  when (decodedInstruction = LHU and result(1 downto 0) = "00") else
-        std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), dadoSelecionado'length)) when (decodedInstruction = LHU and result(1 downto 0) = "10");
+        std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), dadoSelecionado'length)) when (decodedInstruction = LHU and result(1 downto 0) = "10") else
+        (others => '0');
 
 
     -- Escolhe qual parte da palavra sera usada nas instrucoes de store byte/store half baseado nos
@@ -270,7 +271,8 @@ begin
         x"000000" & std_logic_vector(readData2(7 downto 0))       when (decodedInstruction = SB and result(1 downto 0) = "11") else
         std_logic_vector(readData2(15 downto 0)) & x"0000"        when (decodedInstruction = SH and result(1 downto 0) = "00") else
         x"0000" & std_logic_vector(readData2(15 downto 0))        when (decodedInstruction = SH and result(1 downto 0) = "10") else
-        std_logic_vector(readData2)                               when  decodedInstruction = SW;
+        std_logic_vector(readData2)                               when  decodedInstruction = SW else
+        (others => '0');
         -- Data to data memory comes from the second read register at register file
 
     -- ALU output address the data memory
