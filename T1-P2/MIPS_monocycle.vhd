@@ -258,8 +258,7 @@ begin
         std_logic_vector(RESIZE(SIGNED(data_in(15 downto 0)), dadoSelecionado'length))    when (decodedInstruction = LH  and result(1 downto 0) = "00") else
         std_logic_vector(RESIZE(SIGNED(data_in(31 downto 16)), dadoSelecionado'length))   when (decodedInstruction = LH  and result(1 downto 0) = "10") else
         std_logic_vector(RESIZE(UNSIGNED(data_in(15 downto 0)), dadoSelecionado'length))  when (decodedInstruction = LHU and result(1 downto 0) = "00") else
-        std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), dadoSelecionado'length)) when (decodedInstruction = LHU and result(1 downto 0) = "10") else
-        (others => '0');
+        std_logic_vector(RESIZE(UNSIGNED(data_in(31 downto 16)), dadoSelecionado'length)) when (decodedInstruction = LHU and result(1 downto 0) = "10");
 
 
     -- Escolhe qual parte da palavra sera usada nas instrucoes de store byte/store half baseado nos
