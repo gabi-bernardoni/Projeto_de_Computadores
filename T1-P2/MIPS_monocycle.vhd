@@ -236,8 +236,8 @@ begin
 
 
     -- Gera as flags de zero e negativo
-    flagZero <= '1' when result = 0 else '0';
-    flagNegativo <= result(31);
+    flagZero     <= '1' when result = 0 else '0';
+    flagNegativo <= '1' when SIGNED(result) < 0 else '0';
 
       
     ---------------------------
@@ -271,7 +271,8 @@ begin
         x"000000" & std_logic_vector(readData2(7 downto 0))       when (decodedInstruction = SB and result(1 downto 0) = "11") else
         std_logic_vector(readData2(15 downto 0)) & x"0000"        when (decodedInstruction = SH and result(1 downto 0) = "00") else
         x"0000" & std_logic_vector(readData2(15 downto 0))        when (decodedInstruction = SH and result(1 downto 0) = "10") else
-        std_logic_vector(readData2)                               when  decodedInstruction = SW;
+        std_logic_vector(readData2)                               when  decodedInstruction = SW else
+        (others => '0');
         -- Data to data memory comes from the second read register at register file
 
     -- ALU output address the data memory
