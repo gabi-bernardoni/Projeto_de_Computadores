@@ -265,15 +265,16 @@ begin
     -- Escolhe qual parte da palavra sera usada nas instrucoes de store byte/store half baseado nos
     -- dois ultimos bits do resultado da ULA
     data_out <=
-        std_logic_vector(readData2(7 downto 0)) & x"000000"       when (decodedInstruction = SB and result(1 downto 0) = "00") else
-        x"00" & std_logic_vector(readData2(7 downto 0)) & x"0000" when (decodedInstruction = SB and result(1 downto 0) = "01") else
-        x"0000" & std_logic_vector(readData2(7 downto 0)) & x"00" when (decodedInstruction = SB and result(1 downto 0) = "10") else
-        x"000000" & std_logic_vector(readData2(7 downto 0))       when (decodedInstruction = SB and result(1 downto 0) = "11") else
-        std_logic_vector(readData2(15 downto 0)) & x"0000"        when (decodedInstruction = SH and result(1 downto 0) = "00") else
-        x"0000" & std_logic_vector(readData2(15 downto 0))        when (decodedInstruction = SH and result(1 downto 0) = "10") else
+        x"000000" & std_logic_vector(readData2(7 downto 0))       when (decodedInstruction = SB and result(1 downto 0) = "00") else
+        x"0000" & std_logic_vector(readData2(7 downto 0)) & x"00" when (decodedInstruction = SB and result(1 downto 0) = "01") else
+        x"00" & std_logic_vector(readData2(7 downto 0)) & x"0000" when (decodedInstruction = SB and result(1 downto 0) = "10") else
+        std_logic_vector(readData2(7 downto 0)) & x"000000"       when (decodedInstruction = SB and result(1 downto 0) = "11") else
+        x"0000" & std_logic_vector(readData2(15 downto 0))        when (decodedInstruction = SH and result(1 downto 0) = "00") else
+        std_logic_vector(readData2(15 downto 0)) & x"0000"        when (decodedInstruction = SH and result(1 downto 0) = "10") else
         std_logic_vector(readData2)                               when  decodedInstruction = SW else
+        -- Para SW: Data to data memory comes from the second read register at register file
         (others => '0');
-        -- Data to data memory comes from the second read register at register file
+
 
     -- ALU output address the data memory
     dataAddress <= STD_LOGIC_VECTOR(result);
