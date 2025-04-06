@@ -1,16 +1,16 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity MIPS_with_DCM is
+entity MIPS_FPGA_TEST is
     port (
         clk_100MHz  : in  std_logic;  -- Clock da Nexys 3 (100 MHz)
         rst_n       : in  std_logic;  -- Reset (ativo baixo)
         -- Sinais de debug (opcional)
         pc_debug    : out std_logic_vector(31 downto 0)
     );
-end MIPS_with_DCM;
+end MIPS_FPGA_TEST;
 
-architecture structural of MIPS_with_DCM is
+architecture structural of MIPS_FPGA_TEST is
     -- Sinais de clock e reset
     signal clk_25MHz    : std_logic;  -- Clock de sistema (25 MHz)
     signal rst_sync     : std_logic;  -- Reset sincronizado
