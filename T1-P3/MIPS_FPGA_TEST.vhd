@@ -20,8 +20,7 @@ architecture structural of MIPS_FPGA_TEST is
     signal wbe : std_logic_vector(3 downto 0);
 
 begin
-    -- Conversão do reset (ativo baixo -> ativo alto)
-    signal rst_int : std_logic;
+
 
     ClockManager: entity work.ClockManager
     port map (
