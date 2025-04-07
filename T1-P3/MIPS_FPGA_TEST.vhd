@@ -4,7 +4,7 @@ use IEEE.std_logic_1164.all;
 entity MIPS_FPGA_TEST is
     port (
         clk_100MHz  : in  std_logic;  -- Clock da Nexys 3 (100 MHz)
-        rst_n       : in  std_logic;  -- Reset (ativo baixo)
+        rst         : in  std_logic;  -- Reset (ativo baixo)
         pc_debug    : out std_logic_vector(31 downto 0)
     );
 end MIPS_FPGA_TEST;
@@ -12,8 +12,7 @@ end MIPS_FPGA_TEST;
 architecture structural of MIPS_FPGA_TEST is
     -- Sinais de clock e reset
     signal clk_25MHz    : std_logic;  
-    signal rst_sync     : std_logic;  
-    signal rst          : std_logic;  -
+    signal reset_sync   : std_logic;
 
     -- Sinais do MIPS
     signal instructionAddress, instruction, dataAddress, data_in, data_out : std_logic_vector(31 downto 0);
@@ -22,9 +21,9 @@ architecture structural of MIPS_FPGA_TEST is
 
 begin
     -- Conversão do reset (ativo baixo -> ativo alto)
-    rst <= not rst_n;
+    signal rst_int : std_logic;
 
-    CLK_MANAGER: entity work.ClockManager
+    ClockManager: entity work.ClockManager
     port map (
         clk_100MHz  => clk_100MHz,
         clk_25MHz   => clk_25MHz,  -- Usaremos apenas 25 MHz
@@ -34,21 +33,21 @@ begin
     );
 
     -- Sincronizador de Reset
-    RST_SYNC: entity work.ResetSynchonizer
+    ResetSynchronizer: entity work.ResetSynchronizer
     port map (
         clk     => clk_25MHz,  -- Sincronizado com o clock de 25 MHz
         rst_in  => rst,
-        rst_out => rst_sync
+        rst_out => reset_sync
     );
 
     -- MIPS (operando a 25 MHz)
-    MIPS: entity work.MIPS_monocycle
+    MIPS_monocycle: entity work.MIPS_monocycle
     generic map (
         PC_START_ADDRESS => x"00400000"
     )
     port map (
         clk                 => clk_25MHz,
-        rst                 => rst_sync,
+        rst                 => reset_sync,
         instructionAddress  => instructionAddress,
         instruction         => instruction,
         dataAddress         => dataAddress,
