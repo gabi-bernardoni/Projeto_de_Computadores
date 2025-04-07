@@ -1,37 +1,20 @@
-# Clock 100MHz (On-board)
-NET "clk_100MHz" LOC = "V10" | IOSTANDARD = LVCMOS33;
+# Clock principal da placa (normalmente 100MHz)
+NET "clk" LOC = V10 | IOSTANDARD = LVCMOS33;
 
-# Reset (Btn0 - Active Low)
-NET "rst_n" LOC = "A8" | IOSTANDARD = LVCMOS33 | PULLUP;
+# Botão de reset (BTN0)
+NET "rst" LOC = P11 | IOSTANDARD = LVCMOS33;
 
-#############################
-# Display de 7 Segmentos (Anodo Comum)
-#############################
+# Controle dos 4 displays (comum anodo - ativo baixo)
+NET "display_en_n[0]" LOC = N16 | IOSTANDARD = LVCMOS33;
+NET "display_en_n[1]" LOC = N15 | IOSTANDARD = LVCMOS33;
+NET "display_en_n[2]" LOC = P18 | IOSTANDARD = LVCMOS33;
+NET "display_en_n[3]" LOC = P17 | IOSTANDARD = LVCMOS33;
 
-# Segmentos (Catodos - Ativo Baixo)
-NET "segments<7>" LOC = "L18" | IOSTANDARD = LVCMOS33;  # DP (ponto decimal)
-NET "segments<6>" LOC = "F18" | IOSTANDARD = LVCMOS33;  # Segmento G
-NET "segments<5>" LOC = "D17" | IOSTANDARD = LVCMOS33;  # Segmento F
-NET "segments<4>" LOC = "D16" | IOSTANDARD = LVCMOS33;  # Segmento E
-NET "segments<3>" LOC = "G14" | IOSTANDARD = LVCMOS33;  # Segmento D
-NET "segments<2>" LOC = "J17" | IOSTANDARD = LVCMOS33;  # Segmento C
-NET "segments<1>" LOC = "H14" | IOSTANDARD = LVCMOS33;  # Segmento B
-NET "segments<0>" LOC = "C17" | IOSTANDARD = LVCMOS33;  # Segmento A
-
-# Anodos (Ativo Baixo - habilita cada display)
-NET "display_en_n<3>" LOC = "K17" | IOSTANDARD = LVCMOS33;  # AN3 (Display mais à esquerda)
-NET "display_en_n<2>" LOC = "M18" | IOSTANDARD = LVCMOS33;  # AN2
-NET "display_en_n<1>" LOC = "N17" | IOSTANDARD = LVCMOS33;  # AN1
-NET "display_en_n<0>" LOC = "P17" | IOSTANDARD = LVCMOS33;  # AN0 (Display mais à direita)
-
-#############################
-# LEDs para Debug (Opcional)
-#############################
-NET "debug_leds<7>" LOC = "U16" | IOSTANDARD = LVCMOS33;  # LED7
-NET "debug_leds<6>" LOC = "V16" | IOSTANDARD = LVCMOS33;  # LED6
-NET "debug_leds<5>" LOC = "U15" | IOSTANDARD = LVCMOS33;  # LED5
-NET "debug_leds<4>" LOC = "V15" | IOSTANDARD = LVCMOS33;  # LED4
-NET "debug_leds<3>" LOC = "M11" | IOSTANDARD = LVCMOS33;  # LED3
-NET "debug_leds<2>" LOC = "N11" | IOSTANDARD = LVCMOS33;  # LED2
-NET "debug_leds<1>" LOC = "R11" | IOSTANDARD = LVCMOS33;  # LED1
-NET "debug_leds<0>" LOC = "T11" | IOSTANDARD = LVCMOS33;  # LED0
+# Segmentos A-G dos displays
+NET "segments[0]" LOC = T17 | IOSTANDARD = LVCMOS33;  # A
+NET "segments[1]" LOC = T18 | IOSTANDARD = LVCMOS33;  # B
+NET "segments[2]" LOC = U17 | IOSTANDARD = LVCMOS33;  # C
+NET "segments[3]" LOC = U18 | IOSTANDARD = LVCMOS33;  # D
+NET "segments[4]" LOC = M14 | IOSTANDARD = LVCMOS33;  # E
+NET "segments[5]" LOC = N14 | IOSTANDARD = LVCMOS33;  # F
+NET "segments[6]" LOC = L14 | IOSTANDARD = LVCMOS33;  # G
