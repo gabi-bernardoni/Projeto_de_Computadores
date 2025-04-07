@@ -5,16 +5,15 @@ entity MIPS_FPGA_TEST is
     port (
         clk_100MHz  : in  std_logic;  -- Clock da Nexys 3 (100 MHz)
         rst_n       : in  std_logic;  -- Reset (ativo baixo)
-        -- Sinais de debug (opcional)
         pc_debug    : out std_logic_vector(31 downto 0)
     );
 end MIPS_FPGA_TEST;
 
 architecture structural of MIPS_FPGA_TEST is
     -- Sinais de clock e reset
-    signal clk_25MHz    : std_logic;  -- Clock de sistema (25 MHz)
-    signal rst_sync     : std_logic;  -- Reset sincronizado
-    signal rst          : std_logic;  -- Reset (ativo alto)
+    signal clk_25MHz    : std_logic;  
+    signal rst_sync     : std_logic;  
+    signal rst          : std_logic;  -
 
     -- Sinais do MIPS
     signal instructionAddress, instruction, dataAddress, data_in, data_out : std_logic_vector(31 downto 0);
@@ -25,7 +24,6 @@ begin
     -- Conversão do reset (ativo baixo -> ativo alto)
     rst <= not rst_n;
 
-    -- Clock Manager (DCM: 100 MHz -> 25 MHz)
     CLK_MANAGER: entity work.ClockManager
     port map (
         clk_100MHz  => clk_100MHz,
