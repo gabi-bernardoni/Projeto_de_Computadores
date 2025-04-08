@@ -46,7 +46,7 @@ begin
     );
     
     -- Reset Synchronizer
-    RST_SYNC: entity work.ResetSynchonizer
+    RESET_SYNC: entity work.ResetSynchonizer
     port map (
         clk     => clk_25MHz,
         rst_in  => rst,
@@ -127,25 +127,25 @@ begin
     hex0 <= reg_disp_out(19 downto 16);
     
     -- Hex to 7-segment converters
-    HEX0: entity work.BCD7seg
+    HEX00: entity work.BCD7seg
     port map (
         bcd     => hex0,
         segments => display0
     );
     
-    HEX1: entity work.BCD7seg
+    HEX11: entity work.BCD7seg
     port map (
         bcd     => hex1,
         segments => display1
     );
     
-    HEX2: entity work.BCD7seg
+    HEX22: entity work.BCD7seg
     port map (
         bcd     => hex2,
         segments => display2
     );
     
-    HEX3: entity work.BCD7seg
+    HEX33: entity work.BCD7seg
     port map (
         bcd     => hex3,
         segments => display3
