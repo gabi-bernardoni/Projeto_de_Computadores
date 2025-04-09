@@ -73,12 +73,12 @@ begin
     -- Instruction Memory
     INSTR_MEM: entity work.Memory
     generic map (
-        SIZE            => 64,
+        SIZE            => 1024,
         ADDR_WIDTH      => 30,
         COL_WIDTH       => 8,
         NB_COL          => 4,
         OFFSET          => x"00400000",
-        imageFileName   => "t1_code.txt"
+        imageFileName   => "t1p3_code.txt"
     )
     port map (
         clk         => clk_25MHz,
@@ -92,12 +92,12 @@ begin
     -- Data Memory
     DATA_MEM: entity work.Memory
     generic map (
-        SIZE            => 10,
+        SIZE            => 1024,
         ADDR_WIDTH      => 30,
         COL_WIDTH       => 8,
         NB_COL          => 4,
         OFFSET          => x"10010000",
-        imageFileName   => "t1_data.txt"
+        imageFileName   => "t1p3_data.txt"
     )
     port map (
         clk         => clk_25MHz,
