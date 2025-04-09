@@ -8,8 +8,6 @@ architecture behavioral of MIPS_FPGA_TEST_tb is
     -- Sinais de entrada
     signal clk_100MHz : std_logic := '0';
     signal rst_n      : std_logic := '0';
-    -- Sinais de saída (debug)
-    signal pc_debug   : std_logic_vector(31 downto 0);
 
 begin
     -- Gerador de clock (100 MHz, período 10 ns)
@@ -23,13 +21,8 @@ begin
     port map (
         clk_100MHz => clk_100MHz,
         rst_n      => rst_n,
-        pc_debug   => pc_debug
+        display_en_n    : out std_logic_vector(3 downto 0),  
+        segments        : out std_logic_vector(7 downto 0) 
     );
-
-    -- Processo para finalizar a simulação
-    process
-    begin
-        wait for 1 ms;  -- Tempo de simulação
-        assert false report "Simulação concluída!" severity failure;
-    end process;
+        
 end behavioral;
