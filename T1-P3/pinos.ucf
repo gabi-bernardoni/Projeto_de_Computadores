@@ -1,0 +1,18 @@
+NET "clk" LOC = V10
+
+NET "rst" LOC = B11 
+
+# Controle dos 4 displays 
+NET "display_en_n[0]" LOC = N16 
+NET "display_en_n[1]" LOC = N15 
+NET "display_en_n[2]" LOC = P18 
+NET "display_en_n[3]" LOC = P17 
+
+# Segmentos A-G dos displays
+NET "segments[0]" LOC = T17 
+NET "segments[1]" LOC = T18 
+NET "segments[2]" LOC = U17 
+NET "segments[3]" LOC = U18 
+NET "segments[4]" LOC = M14 
+NET "segments[5]" LOC = N14 
+NET "segments[6]" LOC = L14 
