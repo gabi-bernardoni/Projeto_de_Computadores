@@ -53,12 +53,12 @@ begin
     
     INSTRUCTION_MEMORY: entity work.Memory(behavioral)
         generic map (
-            SIZE            => 64,  -- Memory depth in words
+            SIZE            => 1024,  -- Memory depth in words
             ADDR_WIDTH      => 30,
             COL_WIDTH       => 8,
             NB_COL          => 4,   
             OFFSET          => MARS_INSTRUCTION_OFFSET,   -- MARS initial address (mapped to memory address 0x00000000)
-            imageFileName   => "t1_code.txt"
+            imageFileName   => "t1p3_code.txt"
         )
         port map (
             clk             => clk,
@@ -73,12 +73,12 @@ begin
     -- in order to support monocycle execution by MIPS
     DATA_MEMORY: entity work.Memory(behavioral)
         generic map (
-            SIZE            => 10,  -- Memory depth in words
+            SIZE            => 1024,  -- Memory depth in words
             ADDR_WIDTH      => 30,
             COL_WIDTH       => 8,
             NB_COL          => 4,           
             OFFSET          => MARS_DATA_OFFSET,  -- MARS initial address (mapped to memory address 0x00000000)
-            imageFileName   => "t1_data.txt"
+            imageFileName   => "t1p3_data.txt"
         )
         port map (
             clk             => clk_n,
