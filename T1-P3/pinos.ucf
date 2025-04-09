@@ -1,20 +1,18 @@
-# Clock principal da placa (normalmente 100MHz)
-NET "clk" LOC = V10 | IOSTANDARD = LVCMOS33;
+NET "clk" LOC = V10
 
-# Botão de reset (BTN0)
-NET "rst" LOC = P11 | IOSTANDARD = LVCMOS33;
+NET "rst" LOC = B11 
 
-# Controle dos 4 displays (comum anodo - ativo baixo)
-NET "display_en_n[0]" LOC = N16 | IOSTANDARD = LVCMOS33;
-NET "display_en_n[1]" LOC = N15 | IOSTANDARD = LVCMOS33;
-NET "display_en_n[2]" LOC = P18 | IOSTANDARD = LVCMOS33;
-NET "display_en_n[3]" LOC = P17 | IOSTANDARD = LVCMOS33;
+# Controle dos 4 displays 
+NET "display_en_n[0]" LOC = N16 
+NET "display_en_n[1]" LOC = N15 
+NET "display_en_n[2]" LOC = P18 
+NET "display_en_n[3]" LOC = P17 
 
 # Segmentos A-G dos displays
-NET "segments[0]" LOC = T17 | IOSTANDARD = LVCMOS33;  # A
-NET "segments[1]" LOC = T18 | IOSTANDARD = LVCMOS33;  # B
-NET "segments[2]" LOC = U17 | IOSTANDARD = LVCMOS33;  # C
-NET "segments[3]" LOC = U18 | IOSTANDARD = LVCMOS33;  # D
-NET "segments[4]" LOC = M14 | IOSTANDARD = LVCMOS33;  # E
-NET "segments[5]" LOC = N14 | IOSTANDARD = LVCMOS33;  # F
-NET "segments[6]" LOC = L14 | IOSTANDARD = LVCMOS33;  # G
+NET "segments[0]" LOC = T17 
+NET "segments[1]" LOC = T18 
+NET "segments[2]" LOC = U17 
+NET "segments[3]" LOC = U18 
+NET "segments[4]" LOC = M14 
+NET "segments[5]" LOC = N14 
+NET "segments[6]" LOC = L14 
