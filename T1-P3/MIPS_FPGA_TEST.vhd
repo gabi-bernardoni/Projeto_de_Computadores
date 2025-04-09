@@ -108,17 +108,17 @@ begin
         data_out    => data_in
     );
     
-    -- Register to hold display value (dataAddress)
-    process(clk_25MHz, rst_sync)
-    begin
-        if rst_sync = '1' then
-            reg_disp_out <= (others => '0');
-        elsif rising_edge(clk_25MHz) then
-            if ce = '1' then
-                reg_disp_out <= dataAddress;
-            end if;
+    -- Register dataout
+process(clk_25MHz, rst_sync)
+begin
+    if rst_sync = '1' then
+        reg_disp_out <= (others => '0');
+    elsif rising_edge(clk_25MHz) then
+        if ce = '1' and dataAddress(31) = '1' then
+            reg_disp_out <= data_out;
         end if;
-    end process;
+    end if;
+end process;
     
     -- Split 32-bit dataAddress into 4 hex digits
     hex3 <= reg_disp_out(31 downto 28);
