@@ -1,6 +1,6 @@
 NET "clk" LOC = V10;
 
-NET "rst" LOC = B11;
+NET "rst" LOC = B8;
 
 # Controle dos 4 displays 
 NET "display_en_n[0]" LOC = N16;
